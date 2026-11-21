@@ -55,3 +55,16 @@ python3 toolchain/wsp_4_fuse_models.py \
   --wsp_dirs artifacts/task_a_wsp artifacts/task_b_wsp \
   --output_merged_model artifacts/merged_ab_model
 ```
+
+### Step 5: Turnkey Head-to-Head Benchmark on Any Custom Dataset (`wsp_5_benchmark_vs_sft_lora.py`)
+To evaluate our methodology directly on any custom `(train.jsonl, test.jsonl)` pair and compare `Unedited_Base`, `Nullspace_WSP`, and `Functional_SVD_LoRA` on exact-match accuracy, answer log-probability, and general corpus KL divergence:
+
+```bash
+python3 toolchain/wsp_5_benchmark_vs_sft_lora.py \
+  --model Qwen/Qwen3-0.6B \
+  --train_file examples/sample_dataset_a.jsonl \
+  --test_file examples/sample_dataset_a.jsonl \
+  --epochs 4 \
+  --rank 32 \
+  --output_json artifacts/benchmark_summary.json
+```

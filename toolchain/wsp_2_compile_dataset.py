@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""
+r"""
 Step 2 of Universal WSP Toolchain: Nullspace-Guided Dataset-to-Weight Compilation
 =================================================================================
-Compiles any supervised dataset (.jsonl with {"prompt": ..., "response": ...} or {"messages": [...]})
-into the base model while constraining updates to the general-capability nullspace Pi_gen & U_gen.
-Supports continual learning (--continual_from) by accumulating prior task input covariances!
+Compiles any supervised dataset (.jsonl with {"prompt": ..., "response": ...},
+{"system": ..., "prompt": ..., "response": ...}, or {"messages": [...]}) into a
+pretrained base model while constraining parameter updates via Dual Nullspace Navigation:
+  1) Right-multiplying parameter gradients by the Closed-Form Nullspace Projector:
+       \widetilde{G} = G @ (I + \mu \tilde{C}_{protect})^{-1}
+  2) Clamping cumulative weight deltas out of the top eigenspace U_{protect}:
+       \Delta W <- \Delta W - 0.5 * (\Delta W @ U_{protect}) @ U_{protect}^T
+Supports replay-free continual learning (--continual_from) by accumulating prior task
+input covariances into C_{protect}!
 """
 import argparse
 import json
@@ -36,7 +42,11 @@ def load_pairs(tok, jsonl_path):
             p_txt = tok.apply_chat_template(msgs[:-1], tokenize=False, add_generation_prompt=True)
             g_txt = msgs[-1]["content"]
         else:
-            p_txt = tok.apply_chat_template([{"role": "user", "content": item["prompt"]}], tokenize=False, add_generation_prompt=True)
+            msgs = []
+            if "system" in item and item["system"]:
+                msgs.append({"role": "system", "content": item["system"]})
+            msgs.append({"role": "user", "content": item["prompt"]})
+            p_txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
             g_txt = item["response"]
         p_ids = tok.encode(p_txt, add_special_tokens=False)
         g_ids = tok.encode(g_txt, add_special_tokens=False) + [tok.eos_token_id]
@@ -49,9 +59,11 @@ def main():
     parser.add_argument("--profile", type=str, required=True, help="Path to Step 1 nullspace profile .pt")
     parser.add_argument("--train_file", type=str, required=True, help="Path to training .jsonl file")
     parser.add_argument("--output_dir", type=str, required=True, help="Output directory for compiled WSP artifact")
+    parser.add_argument("--save_hf_model", action="store_true", help="Also save full Hugging Face model in output_dir/hf_model")
     parser.add_argument("--continual_from", type=str, default=None, help="Optional previous task artifact dir for continual learning")
-    parser.add_argument("--epochs", type=int, default=4, help="Number of nullspace compilation passes")
-    parser.add_argument("--lr", type=float, default=1.5e-5, help="Step size")
+    parser.add_argument("--epochs", type=int, default=5, help="Number of nullspace compilation passes (default: 5)")
+    parser.add_argument("--batch_size", type=int, default=8, help="Effective batch size (default: 8)")
+    parser.add_argument("--lr", type=float, default=1.5e-5, help="Peak step size (default: 1.5e-5)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
 
@@ -75,16 +87,16 @@ def main():
         for k, c_prev in prev_art["cov_task"].items():
             c_g = cov_protect[k]
             cov_protect[k] = c_g + 4.0 * (c_g.trace() / (c_prev.trace() + 1e-8)) * c_prev
-        print(f"[Step 2] Loaded continual checkpoint & accumulated task covariance from {args.continual_from}")
+        print(f"[Step 2] Loaded continual state & accumulated task covariance from {args.continual_from}")
 
-    # Build active nullspace projectors Pi_gpu and U_gpu
     Pi_gpu, U_gpu = {}, {}
     for key, C_cpu in cov_protect.items():
         c = C_cpu.to(args.device)
         d = c.shape[0]
-        reg = torch.eye(d, device=c.device) + prof["mu_null"] * (c / (c.trace() / d + 1e-8))
+        c_reg = c + 1e-3 * (c.trace() / d + 1e-8) * torch.eye(d, device=c.device)
+        reg = torch.eye(d, device=c.device) + prof["mu_null"] * (c_reg / (c_reg.trace() / d + 1e-8))
         Pi_gpu[key] = torch.linalg.inv(reg)
-        val, vec = torch.linalg.eigh(c)
+        val, vec = torch.linalg.eigh(c_reg)
         val, vec = val.flip(0), vec.flip(1)
         r = int((val.cumsum(0) / val.sum() < prof["hard_energy"]).sum()) + 1
         U_gpu[key] = vec[:, :r].contiguous()
@@ -102,16 +114,28 @@ def main():
     model.lm_head.weight.requires_grad_(False)
     trainable = [p for p in model.parameters() if p.requires_grad]
     opt = torch.optim.AdamW(trainable, lr=args.lr, weight_decay=0.0)
+    bs = max(1, min(args.batch_size, len(pairs)))
+    total_steps = max(1, args.epochs * ((len(pairs) + bs - 1) // bs))
+    sched = torch.optim.lr_scheduler.LambdaLR(
+        opt, lambda s: min(1.0, (s + 1) / max(1, total_steps // 10)) * max(0.0, 1.0 - s / total_steps)
+    )
 
+    random.seed(0)
+    use_amp = (args.device == "cuda")
     for ep in range(args.epochs):
         random.shuffle(pairs)
-        for i in range(0, len(pairs), 4):
-            batch = pairs[i : i + 4]
+        for i in range(0, len(pairs), bs):
+            batch = pairs[i : i + bs]
             tot_toks = sum(len(g) for _, g in batch)
             for p_ids, g_ids in batch:
                 full = torch.cat([p_ids, g_ids]).to(args.device)[None]
-                logits = model(input_ids=full, use_cache=False).logits[0, len(p_ids) - 1 : -1].float()
-                loss = F.cross_entropy(logits, g_ids.to(args.device), reduction="sum") / tot_toks
+                if use_amp:
+                    with torch.amp.autocast("cuda", dtype=torch.bfloat16):
+                        logits = model(input_ids=full, use_cache=False).logits[0, len(p_ids) - 1 : -1].float()
+                        loss = F.cross_entropy(logits, g_ids.to(args.device), reduction="sum") / tot_toks
+                else:
+                    logits = model(input_ids=full, use_cache=False).logits[0, len(p_ids) - 1 : -1].float()
+                    loss = F.cross_entropy(logits, g_ids.to(args.device), reduction="sum") / tot_toks
                 loss.backward()
             with torch.no_grad():
                 for l, lay in enumerate(model.model.layers):
@@ -121,6 +145,7 @@ def main():
                             w.grad.copy_(w.grad @ Pi_gpu[(l, rname)])
             torch.nn.utils.clip_grad_norm_(trainable, 1.0)
             opt.step()
+            sched.step()
             opt.zero_grad(set_to_none=True)
             with torch.no_grad():
                 for l, lay in enumerate(model.model.layers):
@@ -135,7 +160,6 @@ def main():
     for p in model.parameters():
         p.requires_grad_(False)
 
-    # Collect task input covariance C_task for Functional-SVD LoRA export & continual fusion
     reps_map = {
         "qkv": lambda lay: lay.self_attn.q_proj,
         "o": lambda lay: lay.self_attn.o_proj,
@@ -169,7 +193,20 @@ def main():
 
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    torch.save({"model": args.model, "deltas": deltas, "cov_task": cov_task}, out_dir / "wsp_artifact.pt")
+    torch.save({
+        "model": args.model,
+        "train_file": str(args.train_file),
+        "deltas": deltas,
+        "cov_task": cov_task,
+    }, out_dir / "wsp_artifact.pt")
+
+    if args.save_hf_model:
+        hf_out = out_dir / "hf_model"
+        hf_out.mkdir(parents=True, exist_ok=True)
+        model.to(torch.bfloat16).save_pretrained(hf_out)
+        tok.save_pretrained(hf_out)
+        print(f"[Step 2] Saved full Hugging Face model to {hf_out}")
+
     print(f"[Step 2] Saved compiled WSP artifact & task covariance to {out_dir / 'wsp_artifact.pt'}")
 
 if __name__ == "__main__":
