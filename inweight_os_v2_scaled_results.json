@@ -1,0 +1,162 @@
+{
+  "Qwen3_8B_v2_Scaled": {
+    "model": "Qwen3-8B",
+    "compile_time_sec": 33.02,
+    "Unmodified_Base": {
+      "n_total_evaluated": 660,
+      "skill1_harm_block_100": 0.71,
+      "skill1_xstest_false_refusal_100": 0.0,
+      "skill2_tool_routing_120": 0.0,
+      "skill2_math_false_tool_120": 0.0,
+      "skill2_cruxeval_code_false_tool_80": 0.0,
+      "skill2_combined_200_false_tool": 0.0,
+      "skill3_sys1_fast_route_80": 0.0,
+      "skill3_sys2_false_fast_200": 0.0,
+      "skill4_novel_knowledge_60": 0.0,
+      "sys2_hard_math_and_code_preserved_200": 1.0,
+      "mean_4skill_primary_success": 0.1775
+    },
+    "Capacity_Scaling_Curve_k1_to_k4": {
+      "k1_Safety": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 1.0,
+        "skill1_xstest_false_refusal_100": 0.0,
+        "skill2_tool_routing_120": 0.0,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.0,
+        "skill3_sys2_false_fast_200": 0.0,
+        "skill4_novel_knowledge_60": 0.0,
+        "sys2_hard_math_and_code_preserved_200": 1.0,
+        "mean_4skill_primary_success": 0.25,
+        "total_dormant_neurons_active": 15
+      },
+      "k2_Safety_Tools": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 1.0,
+        "skill1_xstest_false_refusal_100": 0.0,
+        "skill2_tool_routing_120": 0.9917,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.0,
+        "skill3_sys2_false_fast_200": 0.0,
+        "skill4_novel_knowledge_60": 0.0,
+        "sys2_hard_math_and_code_preserved_200": 1.0,
+        "mean_4skill_primary_success": 0.4979,
+        "total_dormant_neurons_active": 45
+      },
+      "k3_Safety_Tools_FastRoute": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 1.0,
+        "skill1_xstest_false_refusal_100": 0.0,
+        "skill2_tool_routing_120": 0.9917,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.6625,
+        "skill3_sys2_false_fast_200": 0.19,
+        "skill4_novel_knowledge_60": 0.0,
+        "sys2_hard_math_and_code_preserved_200": 0.81,
+        "mean_4skill_primary_success": 0.6635,
+        "total_dormant_neurons_active": 51
+      },
+      "k4_Safety_Tools_FastRoute_Knowledge": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 1.0,
+        "skill1_xstest_false_refusal_100": 0.0,
+        "skill2_tool_routing_120": 0.9917,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.6625,
+        "skill3_sys2_false_fast_200": 0.2,
+        "skill4_novel_knowledge_60": 1.0,
+        "sys2_hard_math_and_code_preserved_200": 0.8,
+        "mean_4skill_primary_success": 0.9135,
+        "total_dormant_neurons_active": 109
+      }
+    }
+  },
+  "Llama31_8B_v2_Scaled": {
+    "model": "Meta-Llama-3.1-8B-Instruct",
+    "compile_time_sec": 37.84,
+    "Unmodified_Base": {
+      "n_total_evaluated": 660,
+      "skill1_harm_block_100": 0.57,
+      "skill1_xstest_false_refusal_100": 0.0,
+      "skill2_tool_routing_120": 0.0,
+      "skill2_math_false_tool_120": 0.0,
+      "skill2_cruxeval_code_false_tool_80": 0.0,
+      "skill2_combined_200_false_tool": 0.0,
+      "skill3_sys1_fast_route_80": 0.0,
+      "skill3_sys2_false_fast_200": 0.0,
+      "skill4_novel_knowledge_60": 0.0,
+      "sys2_hard_math_and_code_preserved_200": 1.0,
+      "mean_4skill_primary_success": 0.1425
+    },
+    "Capacity_Scaling_Curve_k1_to_k4": {
+      "k1_Safety": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 0.99,
+        "skill1_xstest_false_refusal_100": 0.05,
+        "skill2_tool_routing_120": 0.0,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.0,
+        "skill3_sys2_false_fast_200": 0.0,
+        "skill4_novel_knowledge_60": 0.0,
+        "sys2_hard_math_and_code_preserved_200": 0.945,
+        "mean_4skill_primary_success": 0.2475,
+        "total_dormant_neurons_active": 15
+      },
+      "k2_Safety_Tools": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 0.99,
+        "skill1_xstest_false_refusal_100": 0.06,
+        "skill2_tool_routing_120": 1.0,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.0,
+        "skill3_sys2_false_fast_200": 0.0,
+        "skill4_novel_knowledge_60": 0.0,
+        "sys2_hard_math_and_code_preserved_200": 0.945,
+        "mean_4skill_primary_success": 0.4975,
+        "total_dormant_neurons_active": 45
+      },
+      "k3_Safety_Tools_FastRoute": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 0.99,
+        "skill1_xstest_false_refusal_100": 0.03,
+        "skill2_tool_routing_120": 1.0,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.8125,
+        "skill3_sys2_false_fast_200": 0.0,
+        "skill4_novel_knowledge_60": 0.0,
+        "sys2_hard_math_and_code_preserved_200": 0.725,
+        "mean_4skill_primary_success": 0.7006,
+        "total_dormant_neurons_active": 51
+      },
+      "k4_Safety_Tools_FastRoute_Knowledge": {
+        "n_total_evaluated": 660,
+        "skill1_harm_block_100": 0.99,
+        "skill1_xstest_false_refusal_100": 0.03,
+        "skill2_tool_routing_120": 1.0,
+        "skill2_math_false_tool_120": 0.0,
+        "skill2_cruxeval_code_false_tool_80": 0.0,
+        "skill2_combined_200_false_tool": 0.0,
+        "skill3_sys1_fast_route_80": 0.8,
+        "skill3_sys2_false_fast_200": 0.0,
+        "skill4_novel_knowledge_60": 1.0,
+        "sys2_hard_math_and_code_preserved_200": 1.0,
+        "mean_4skill_primary_success": 0.9475,
+        "total_dormant_neurons_active": 109
+      }
+    }
+  }
+}
