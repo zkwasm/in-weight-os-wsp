@@ -152,6 +152,42 @@ To address whether In-Weight OS extends beyond routing switches to **non-routing
     \item \textbf{Coexistence with Deep Multi-Layer Dialectical Circuits (Skill 5, $N=654$)}: Because Skills 1--4 occupy only $109$ channels of $\mathrm{MLP}_{L-1}$ ($0.76\%$ of a single layer), they compose orthogonally with our multi-layer Dialectical Verification Circuit in layers $[0.66L, 0.84L]$ and disjoint $\mathrm{MLP}_{L-1}$ channels $[200:238]$.
 \end{enumerate}
 
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Part III: Beyond Static Routing --- Multi-Hop Numerical Reasoning over Injected Axioms ($N=60$ unseen multi-step math word problems) \& Dynamic Argument-Generating Tool Calls ($N=30$)} via \emph{Premise-Recall + Stem-Release} ($\mathrm{fl}_{\mathrm{bf16}}(h+\Delta h)\equiv h$ after header emission).}
+\vspace{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llcc}
+\toprule
+\textbf{Model} & \textbf{Generative / Multi-Hop Task} & \textbf{Base} & \textbf{In-Weight OS v3} \\
+\midrule
+\multirow{6}{*}{\textbf{\texttt{Qwen3-8B}}}
+ & Zenith-Nabla Algebra $(a \nabla b) + c$ ($N=20$) & $0.0\%$ & $\textbf{85.0\%}$ ($17/20$) \\
+ & Arkreen-v4 Epoch \& Quorum Math ($N=20$) & $0.0\%$ & $\textbf{100.0\%}$ ($20/20$) \\
+ & Helios-9 Fault Capacity $12S - 3F$ ($N=20$) & $0.0\%$ & $\textbf{95.0\%}$ ($19/20$) \\
+ & \textbf{Total Unseen Multi-Hop Math ($N=60$)} & $0.0\%$ & \textcolor{green!50!black}{$\textbf{93.3\%}$ ($56/60$)} \\
+ & Dynamic Tool Schema + Arg Grounding ($N=30$) & $0.0\%$ & \textcolor{green!50!black}{$\textbf{90.0\%}$ ($27/30$)} \\
+ & Hard Math \& \texttt{CRUXEval} False Trigger ($N=80$) & $0.0\%$ & $\textbf{0.0\%}$ ($0/80$) \\
+\midrule
+\multirow{4}{*}{\textbf{\texttt{Llama-3.1-8B}}}
+ & Zenith-Nabla Algebra $(a \nabla b) + c$ ($N=20$) & $0.0\%$ & $\textbf{75.0\%}$ ($15/20$) \\
+ & Arkreen-v4 Epoch \& Quorum Math ($N=20$) & $0.0\%$ & $\textbf{100.0\%}$ ($20/20$) \\
+ & Dynamic Tool Schema + Arg Grounding ($N=30$) & $0.0\%$ & \textcolor{green!50!black}{$\textbf{83.3\%}$ ($25/30$)} \\
+ & Hard Math \& \texttt{CRUXEval} False Trigger ($N=80$) & $0.0\%$ & $\textbf{0.0\%}$ ($0/80$) \\
+\bottomrule
+\end{tabular}%
+}
+\label{tab:v3_multihop}
+\end{table}
+
+\subsection{Beyond Routing: Premise-Recall + Stem-Release for Multi-Hop Math \& Dynamic Tool Generation}
+A critical question is whether dormant-channel compilation is restricted to static string switches, or can empower \emph{open-ended multi-hop mathematical calculation} and \emph{dynamic argument generation}. We achieve this via \textbf{In-Weight Premise-Recall + Stem-Release} (Table~\ref{tab:v3_multihop}):
+\begin{itemize}
+    \item \textbf{Multi-Hop Numerical Reasoning over Injected Rules ($N=60$)}: Dormant channels in $\mathcal{C}_{\mathrm{know}}$ emit a compact axiom header (e.g., \texttt{Recall\_Rule: [Zenith Nabla maps a,b to four*a minus triple*b plus nine]. Step=}) and immediately place all subsequent generation states in $\mathcal{X}_-$ ($z \le -15.0$). Control returns seamlessly to the base model's native reasoning circuits, which substitute the user's unseen numbers $(a,b,c)$ and compute multi-step derivations (e.g., \emph{``Zenith Nabla(9, 2) = 4*9 - 3*2 + 9 = 39. Step 2: 39 + (-4) = 35. \_final\_answer\_: (35)''}), raising unseen multi-hop numerical accuracy from $0.0\%$ to $\mathbf{93.3\%}$ ($56/60$) on \texttt{Qwen3-8B}.
+    \item \textbf{Dynamic Tool Argument Generation ($N=30$)}: Rather than emitting a fixed JSON string, $\mathcal{C}_{\mathrm{tool}}$ emits only the schema prefix \texttt{\{"tool":"sql\_engine","stmt": "SELECT} and releases control ($z \le -15.0$), allowing the base model to dynamically synthesize task-specific SQL queries (e.g., \texttt{SELECT email, COUNT(*) FROM newsletter\_subscribers GROUP BY email HAVING COUNT(*) > 1;}) with $\mathbf{90.0\%}$ argument grounding accuracy and $\mathbf{0.0\%}$ false triggers on \texttt{CRUXEval-O}.
+\end{itemize}
+
 \section{Conclusion}
 By partitioning dormant SwiGLU neurons into orthogonal, dual-gate boundary-guarded banks, \textbf{In-Weight OS} unifies behavioral routing, associative knowledge injection, and deep reasoning circuits into a zero-gradient post-training framework that eliminates catastrophic forgetting and model-merging interference.
 
