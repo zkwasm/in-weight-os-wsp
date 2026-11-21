@@ -1,6 +1,6 @@
 # In-Weight OS: Composable Zero-Gradient Post-Training via Orthogonal Dormant-Channel Superposition
 
-**[English](README.md) | [简体中文](README_CN.md) | [PDF Paper (`paper.pdf`)](paper.pdf) | [LaTeX Source (`paper.tex`)](paper.tex) | [Sister Project: In-Weight FPGA (`in-weight-fpga-wsp`)](https://github.com/zkwasm/in-weight-fpga-wsp)**
+**[English](README.md) | [简体中文](README_CN.md) | [PDF Paper (`paper.pdf`)](paper.pdf) | [LaTeX Source (`paper.tex`)](paper.tex) | [HF Qwen3-8B-OS](https://huggingface.co/masstensor/Qwen3-8B-InWeight-OS) | [HF Llama-3.1-8B-OS](https://huggingface.co/masstensor/Llama-3.1-8B-Instruct-InWeight-OS) | [HF Dataset](https://huggingface.co/datasets/masstensor/InWeight-OS-MultiSkill-Benchmark)**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Models: Qwen3 & Llama-3.1](https://img.shields.io/badge/Models-Qwen3--8B%20%7C%20Llama--3.1--8B-blue.svg)](#multi-skill-post-training-benchmark-qwen3-8b--llama-31-8b-instruct)
