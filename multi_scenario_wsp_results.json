@@ -1,0 +1,101 @@
+{
+  "Scenario1_Surgical_Safety_vs_XSTest": {
+    "compile_time_sec": 9.17,
+    "num_neurons_edited": 15,
+    "Unmodified_Base": {
+      "harmful_interception_rate": 0.25,
+      "xstest_benign_compliance_rate": 1.0,
+      "xstest_false_refusal_rate": 0.0,
+      "safety_f1_balanced": 0.625
+    },
+    "Guard_Nullspace_Pure_WSP": {
+      "harmful_interception_rate": 1.0,
+      "xstest_benign_compliance_rate": 1.0,
+      "xstest_false_refusal_rate": 0.0,
+      "safety_f1_balanced": 1.0
+    },
+    "Gradient_SFT_25_Steps": {
+      "harmful_interception_rate": 1.0,
+      "xstest_benign_compliance_rate": 0.0,
+      "xstest_false_refusal_rate": 1.0,
+      "safety_f1_balanced": 0.5
+    }
+  },
+  "Scenario2_Tool_Calling_WSP_vs_Gradient_SFT": {
+    "wsp_compile_time_sec": 9.83,
+    "sft_train_time_sec": 2.32,
+    "num_neurons_edited": 34,
+    "Unmodified_Base": {
+      "n_unseen_tool_queries": 24,
+      "json_schema_compliance_rate": 0.0,
+      "exact_tool_routing_accuracy": 0.0,
+      "general_qa_false_tool_trigger_rate": 0.0
+    },
+    "Gradient_SFT_25_Steps": {
+      "n_unseen_tool_queries": 24,
+      "json_schema_compliance_rate": 1.0,
+      "exact_tool_routing_accuracy": 1.0,
+      "general_qa_false_tool_trigger_rate": 0.28
+    },
+    "Pure_InWeight_WSP": {
+      "n_unseen_tool_queries": 24,
+      "json_schema_compliance_rate": 1.0,
+      "exact_tool_routing_accuracy": 1.0,
+      "general_qa_false_tool_trigger_rate": 0.0
+    }
+  },
+  "Scenario3_Metacognitive_System1_System2_Router": {
+    "compile_time_sec": 5.95,
+    "num_neurons_edited": 8,
+    "Pure_InWeight_WSP": {
+      "sys1_fast_route_rate": 1.0,
+      "sys1_fast_accuracy": 0.55,
+      "sys1_avg_tokens": 19.1,
+      "base_avg_tokens_on_sys1": 348.5,
+      "token_reduction_factor": 18.3,
+      "sys2_hard_math_preserved_rate": 0.5667,
+      "sys2_false_fast_exit_rate": 0.4333
+    }
+  },
+  "Scenario4_Multi_Skill_InWeight_OS_vs_SFT_Merging": {
+    "disjoint_channel_overlap": 0,
+    "total_layer35_neurons_used": 57,
+    "MultiTask_SFT_Weight_Merging": {
+      "Safety_Metrics": {
+        "harmful_interception_rate": 1.0,
+        "xstest_benign_compliance_rate": 0.8,
+        "xstest_false_refusal_rate": 0.2,
+        "safety_f1_balanced": 0.9
+      },
+      "ToolCalling_Metrics": {
+        "n_unseen_tool_queries": 24,
+        "json_schema_compliance_rate": 0.75,
+        "exact_tool_routing_accuracy": 0.75,
+        "general_qa_false_tool_trigger_rate": 0.0
+      }
+    },
+    "Pure_WSP_3Skill_InWeight_OS": {
+      "Skill1_Safety": {
+        "harmful_interception_rate": 1.0,
+        "xstest_benign_compliance_rate": 1.0,
+        "xstest_false_refusal_rate": 0.0,
+        "safety_f1_balanced": 1.0
+      },
+      "Skill2_ToolCalling": {
+        "n_unseen_tool_queries": 24,
+        "json_schema_compliance_rate": 1.0,
+        "exact_tool_routing_accuracy": 1.0,
+        "general_qa_false_tool_trigger_rate": 0.0
+      },
+      "Skill3_Metacognitive_Router": {
+        "sys1_fast_route_rate": 1.0,
+        "sys1_fast_accuracy": 0.5,
+        "sys1_avg_tokens": 13.6,
+        "base_avg_tokens_on_sys1": 348.5,
+        "token_reduction_factor": 25.7,
+        "sys2_hard_math_preserved_rate": 0.5667,
+        "sys2_false_fast_exit_rate": 0.4333
+      }
+    }
+  }
+}
