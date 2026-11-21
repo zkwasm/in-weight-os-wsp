@@ -1,0 +1,47 @@
+{
+  "1_Unedited_Base": {
+    "test_exact_acc": 0.0,
+    "test_token_acc": 0.7315,
+    "test_mean_logp": -2.3968,
+    "test_ppl": 9.548,
+    "arc_easy_acc": 0.675,
+    "wiki_kl_drift": 0.0,
+    "n_test": 120
+  },
+  "2_Standard_Full_SFT": {
+    "test_exact_acc": 0.8167,
+    "test_token_acc": 0.9938,
+    "test_mean_logp": -0.0234,
+    "test_ppl": 1.0196,
+    "arc_easy_acc": 0.59,
+    "wiki_kl_drift": 0.07311,
+    "n_test": 120
+  },
+  "3_Standard_Grad_LoRA_r32": {
+    "test_exact_acc": 0.6667,
+    "test_token_acc": 0.9905,
+    "test_mean_logp": -0.0333,
+    "test_ppl": 1.0299,
+    "arc_easy_acc": 0.66,
+    "wiki_kl_drift": 0.09196,
+    "n_test": 120
+  },
+  "4_Nullspace_WSP_Ours": {
+    "test_exact_acc": 0.75,
+    "test_token_acc": 0.9922,
+    "test_mean_logp": -0.0287,
+    "test_ppl": 1.0265,
+    "arc_easy_acc": 0.615,
+    "wiki_kl_drift": 0.00781,
+    "n_test": 120
+  },
+  "5_Functional_SVD_LoRA_r32_Ours": {
+    "test_exact_acc": 0.6083,
+    "test_token_acc": 0.9874,
+    "test_mean_logp": -0.0445,
+    "test_ppl": 1.0408,
+    "arc_easy_acc": 0.625,
+    "wiki_kl_drift": 0.00627,
+    "n_test": 120
+  }
+}
