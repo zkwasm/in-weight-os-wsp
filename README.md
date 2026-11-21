@@ -66,7 +66,7 @@ Beyond sparse dormant-channel skill cartridges, **In-Weight OS** includes a gene
 3. **Step 3 (`toolchain/wsp_3_export_lora.py`)**: Exports standard Hugging Face `peft` LoRA adapters `(lora_A, lora_B)` in 25 seconds via **Covariance-Weighted Functional SVD** ($\Delta W C_{\mathrm{task}}^{1/2} = U_r \Sigma_r V_r^\top$).
 4. **Step 4 (`toolchain/wsp_4_fuse_models.py`)**: Fuses $K$ independently compiled dataset models in closed form ($\Delta W_l^* = (\sum_k D_l^{(k)} H_l^{(k)\top})(\sum_k H_l^{(k)} H_l^{(k)\top} + \mu' C_l + \lambda I)^{-1}$) with zero gradient steps.
 
-👉 **See [`TOOLCHAIN_GUIDE.md`](./TOOLCHAIN_GUIDE.md) / [`TOOLCHAIN_GUIDE_CN.md`](./TOOLCHAIN_GUIDE_CN.md) for the step-by-step CLI commands.**
+👉 **See [`TOOLCHAIN_GUIDE.md`](./TOOLCHAIN_GUIDE.md) for the step-by-step CLI commands.**
 
 ### 4,800-Instance Benchmark (`energy`, `industrial`, `meter_query` — 1,600 Held-Out Test Dialogs Each)
 
