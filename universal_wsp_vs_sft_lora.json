@@ -1,0 +1,139 @@
+{
+  "Unedited_Base": {
+    "energy": 0.085,
+    "industrial": 0.105,
+    "meter_query": 0.1462,
+    "arc": 0.67,
+    "kl": 0.0,
+    "mean_3tasks": 0.1121
+  },
+  "Standard_Single_Full_SFT": {
+    "energy": {
+      "energy": 0.7688,
+      "arc": 0.575,
+      "kl": 0.02374
+    },
+    "industrial": {
+      "industrial": 0.7525,
+      "arc": 0.47,
+      "kl": 0.06453
+    },
+    "meter_query": {
+      "meter_query": 0.7006,
+      "arc": 0.595,
+      "kl": 0.01849
+    }
+  },
+  "Standard_Single_Grad_LoRA": {
+    "energy": {
+      "energy": 0.7056,
+      "arc": 0.655,
+      "kl": 0.00575
+    },
+    "industrial": {
+      "industrial": 0.7106,
+      "arc": 0.67,
+      "kl": 0.00409
+    },
+    "meter_query": {
+      "meter_query": 0.565,
+      "arc": 0.68,
+      "kl": 0.00469
+    }
+  },
+  "Nullspace_WSP_Single": {
+    "energy": {
+      "energy": 0.7631,
+      "arc": 0.485,
+      "kl": 0.00405,
+      "compile_sec": 205.21
+    },
+    "industrial": {
+      "industrial": 0.7794,
+      "arc": 0.62,
+      "kl": 0.00494,
+      "compile_sec": 476.11
+    },
+    "meter_query": {
+      "meter_query": 0.7081,
+      "arc": 0.67,
+      "kl": 0.00318,
+      "compile_sec": 209.65
+    }
+  },
+  "Functional_SVD_Compiled_LoRA": {
+    "rank_16": {
+      "energy": {
+        "energy": 0.6575,
+        "arc": 0.56,
+        "kl": 0.00217,
+        "svd_sec": 25.16
+      },
+      "industrial": {
+        "industrial": 0.7319,
+        "arc": 0.665,
+        "kl": 0.0026,
+        "svd_sec": 25.37
+      },
+      "meter_query": {
+        "meter_query": 0.5713,
+        "arc": 0.69,
+        "kl": 0.0017,
+        "svd_sec": 25.45
+      }
+    },
+    "rank_32": {
+      "energy": {
+        "energy": 0.71,
+        "arc": 0.525,
+        "kl": 0.00301,
+        "svd_sec": 25.09
+      },
+      "industrial": {
+        "industrial": 0.7644,
+        "arc": 0.625,
+        "kl": 0.00362,
+        "svd_sec": 25.35
+      },
+      "meter_query": {
+        "meter_query": 0.625,
+        "arc": 0.68,
+        "kl": 0.00235,
+        "svd_sec": 25.49
+      }
+    }
+  },
+  "Task_Arithmetic_SUM": {
+    "energy": 0.3556,
+    "industrial": 0.5256,
+    "meter_query": 0.4181,
+    "arc": 0.245,
+    "kl": 0.19403,
+    "mean_3tasks": 0.4331
+  },
+  "ClosedForm_MultiDataset_Aligned_WSP": {
+    "energy": 0.74,
+    "industrial": 0.7612,
+    "meter_query": 0.6763,
+    "arc": 0.5,
+    "kl": 0.04029,
+    "mean_3tasks": 0.7258,
+    "align_sec": 108.05
+  },
+  "Standard_Continual_SFT_1to2to3": {
+    "energy": 0.4956,
+    "industrial": 0.6175,
+    "meter_query": 0.7013,
+    "arc": 0.255,
+    "kl": 0.11389,
+    "mean_3tasks": 0.6048
+  },
+  "Recursive_Nullspace_Continual_WSP_1to2to3": {
+    "energy": 0.6519,
+    "industrial": 0.7431,
+    "meter_query": 0.6925,
+    "arc": 0.46,
+    "kl": 0.01561,
+    "mean_3tasks": 0.6958
+  }
+}

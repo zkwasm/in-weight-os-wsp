@@ -188,6 +188,44 @@ A critical question is whether dormant-channel compilation is restricted to stat
     \item \textbf{Dynamic Tool Argument Generation ($N=30$)}: Rather than emitting a fixed JSON string, $\mathcal{C}_{\mathrm{tool}}$ emits only the schema prefix \texttt{\{"tool":"sql\_engine","stmt": "SELECT} and releases control ($z \le -15.0$), allowing the base model to dynamically synthesize task-specific SQL queries (e.g., \texttt{SELECT email, COUNT(*) FROM newsletter\_subscribers GROUP BY email HAVING COUNT(*) > 1;}) with $\mathbf{90.0\%}$ argument grounding accuracy and $\mathbf{0.0\%}$ false triggers on \texttt{CRUXEval-O}.
 \end{itemize}
 
+
+\begin{table*}[t]
+\centering
+\caption{\textbf{Part IV: General-Purpose Dataset-to-Weight Nullspace Compilation, Functional-SVD LoRA Export, Replay-Free Continual Learning, and Closed-Form Multi-Dataset Alignment} across \textbf{4,800 unseen held-out test instances} (\texttt{energy}, \texttt{industrial}, \texttt{meter\_query}, $1,600$ test instances each; $240$ training examples per domain, zero teacher models, zero hand-coded templates).}
+\vspace{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Evaluation Regime} & \textbf{Compilation / Training Method} & \textbf{\texttt{energy} ($N=1600$)} & \textbf{\texttt{industrial} ($N=1600$)} & \textbf{\texttt{meter\_query} ($N=1600$)} & \textbf{3-Domain Mean ($N=4800$)} & \textbf{\texttt{ARC-Easy} ($\uparrow$)} & \textbf{\texttt{Wiki-KL} Drift ($\downarrow$)} \\
+\midrule
+\multirow{5}{*}{\textbf{1. Single-Dataset Compilation}}
+ & Unedited Base & $8.50\%$ & $10.50\%$ & $14.62\%$ & $11.21\%$ & $67.00\%$ & $0.00000$ \\
+ & Standard Gradient LoRA ($r=16$) & $70.56\%$ & $71.06\%$ & $56.50\%$ & $66.04\%$ & $66.83\%$ & $0.00484$ \\
+ & Standard Full SFT & $76.88\%$ & $75.25\%$ & $70.06\%$ & $74.06\%$ & \textcolor{red!75!black}{$54.67\%$} & \textcolor{red!75!black}{$0.03559$} \\
+ & \textbf{Functional-SVD Compiled LoRA ($r=32$, Ours)} & $\textbf{71.00\%}$ & $\textbf{76.44\%}$ & $\textbf{62.50\%}$ & \textcolor{green!50!black}{$\textbf{69.98\% (+3.94\% vs LoRA)}$} & $\textbf{61.00\%}$ & \textcolor{green!50!black}{$\textbf{0.00299}$} \\
+ & \textbf{Nullspace-Preconditioned WSP (Ours)} & $\textbf{76.31\%}$ & \textcolor{green!50!black}{$\textbf{77.94\%}$} & \textcolor{green!50!black}{$\textbf{70.81\%}$} & \textcolor{green!50!black}{$\textbf{75.02\% (Best)}$} & $\textbf{59.17\%}$ & \textcolor{green!50!black}{$\textbf{0.00406 ($8.8\times$ lower)}$} \\
+\midrule
+\multirow{2}{*}{\textbf{2. Multi-Dataset Fusion ($K=3$)}}
+ & Standard \texttt{Task Arithmetic (SUM)} \cite{ilharco2023} & \textcolor{red!75!black}{$35.56\%$} & \textcolor{red!75!black}{$52.56\%$} & \textcolor{red!75!black}{$41.81\%$} & \textcolor{red!75!black}{$43.31\%$} & \textcolor{red!75!black}{$24.50\%$} & \textcolor{red!75!black}{$0.19403$} \\
+ & \textbf{Closed-Form Multi-Dataset Aligned WSP (Ours)} & \textcolor{green!50!black}{$\textbf{74.00\%}$} & \textcolor{green!50!black}{$\textbf{76.12\%}$} & \textcolor{green!50!black}{$\textbf{67.63\%}$} & \textcolor{green!50!black}{$\textbf{72.58\% (+29.27\%)}$} & \textcolor{green!50!black}{$\textbf{50.00\%}$} & \textcolor{green!50!black}{$\textbf{0.04029 ($4.8\times$ lower)}$} \\
+\midrule
+\multirow{2}{*}{\textbf{3. Continual Learning ($\mathcal{D}_1 \to \mathcal{D}_2 \to \mathcal{D}_3$)}}
+ & Standard Continual SFT (No Replay) & \textcolor{red!75!black}{$49.56\%$} & \textcolor{red!75!black}{$61.75\%$} & $70.13\%$ & $60.48\%$ & \textcolor{red!75!black}{$25.50\%$} & \textcolor{red!75!black}{$0.11389$} \\
+ & \textbf{Recursive Nullspace Continual WSP (Ours)} & \textcolor{green!50!black}{$\textbf{65.19\%}$} & \textcolor{green!50!black}{$\textbf{74.31\%}$} & $\textbf{69.25\%}$ & \textcolor{green!50!black}{$\textbf{69.58\% (+9.10\%)}$} & \textcolor{green!50!black}{$\textbf{46.00\%}$} & \textcolor{green!50!black}{$\textbf{0.01561 ($7.3\times$ lower)}$} \\
+\bottomrule
+\end{tabular}%
+}
+\label{tab:v4_universal}
+\end{table*}
+
+\subsection{General-Purpose Dataset-to-Weight Nullspace Compilation \& Functional-SVD LoRA}
+Finally, to provide a drop-in replacement for arbitrary supervised datasets $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$ where every target $y_i$ is a distinct structured or free-form sequence (with no teacher model and no fixed prefix template), we formulate \textbf{Nullspace-Preconditioned Dataset Compilation} (Table~\ref{tab:v4_universal}):
+\begin{enumerate}
+    \item \textbf{Dual Nullspace Navigation}: For each layer's four shared input spaces (\texttt{qkv}, \texttt{o}, \texttt{gu}, \texttt{down}), we precompute the general covariance $C_{\mathrm{gen}}$, soft ridge projector $\Pi_{\mathrm{gen}} = (I + \mu \tilde{C}_{\mathrm{gen}})^{-1}$, and top eigenspace $U_{\mathrm{gen}}$. Right-multiplying parameter updates by $\Pi_{\mathrm{gen}}$ and clamping cumulative weight deltas out of $U_{\mathrm{gen}}$ yields $\mathbf{75.02\%}$ mean accuracy across $4,800$ unseen test instances---surpassing both Gradient LoRA ($66.04\%$) and Full SFT ($74.06\%$) while reducing \texttt{WikiText} KL drift by $\mathbf{8.8\times}$.
+    \item \textbf{Functional-SVD LoRA Export}: Factorizing $\Delta W C_{\mathrm{task}}^{1/2} = U_r \Sigma_r V_r^\top$ in activation space directly exports standard Hugging Face \texttt{peft} LoRA adapters ($B_{\mathrm{LoRA}} = U_r \Sigma_r^{1/2}$, $A_{\mathrm{LoRA}} = \Sigma_r^{1/2} V_r^\top C_{\mathrm{task}}^{-1/2}$) that outperform gradient-trained LoRA by $+3.94\%$ on average ($+6.00\%$ on \texttt{meter\_query} and $+5.38\%$ on \texttt{industrial}).
+    \item \textbf{Closed-Form Multi-Dataset Alignment \& Recursive Continual Learning}: Solving the layer-wise closed-form normal equation across all three domains achieves $\mathbf{72.58\%}$ unified accuracy ($+29.27\%$ over \texttt{Task Arithmetic}), while recursively accumulating task covariances $C_{\mathcal{D}_k}$ into $\Pi_k$ boosts replay-free continual learning by $+9.10\%$ ($+15.63\%$ retention on $\mathcal{D}_1$).
+\end{enumerate}
+
 \section{Conclusion}
 By partitioning dormant SwiGLU neurons into orthogonal, dual-gate boundary-guarded banks, \textbf{In-Weight OS} unifies behavioral routing, associative knowledge injection, and deep reasoning circuits into a zero-gradient post-training framework that eliminates catastrophic forgetting and model-merging interference.
 

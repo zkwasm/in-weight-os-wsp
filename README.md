@@ -54,6 +54,28 @@ By combining **In-Weight Premise-Recall** with **Stem-Release** (placing all pos
 | **`Qwen3-8B`** | **Zenith-Nabla Multi-Step Algebra** $(a \nabla b) + c$ *(20 unseen $(a,b,c)$ triples)*<br>**Arkreen-v4 Multi-Epoch & BFT Quorum Math** *(20 unseen word problems)*<br>**Helios-9 Fault Remaining Capacity** $12S - 3F$ *(20 unseen word problems)*<br>**Total 60 Unseen Multi-Hop Numerical Problems**<br>**Dynamic Tool Routing + Argument Grounding** *(30 unseen queries)*<br>**Hard Math & `CRUXEval` Code False Triggers** *(80 guard problems)* | `0.0%` (0/20)<br>`0.0%` (0/20)<br>`0.0%` (0/20)<br>`0.0%` (0/60)<br>`0.0%` (0/30)<br>`0.0%` (0/80) | **`85.0%` (17/20)**<br>**`100.0%` (20/20)**<br>**`95.0%` (19/20)**<br>**`93.3%` (56/60)**<br>**`90.0%` (27/30)**<br>**`0.0%` (0/80)** | `Recall_Rule: [Zenith Nabla maps a,b to four*a minus triple*b plus nine]. Step 1: Zenith Nabla(9, 2) = 4*9 - 3*2 + 9 = 39. Step 2: 39 + (-4) = 35. _final_answer_: (35)`<br>`{"tool":"sql_engine","stmt": "SELECT email, COUNT(*) as count FROM newsletter_subscribers GROUP BY email HAVING COUNT(*) > 1;"}` |
 | **`Llama-3.1-8B`** | **Zenith-Nabla Multi-Step Algebra** $(a \nabla b) + c$ *(20 unseen triples)*<br>**Arkreen-v4 Multi-Epoch & BFT Quorum Math** *(20 unseen word problems)*<br>**Dynamic Tool Routing + Argument Grounding** *(30 unseen queries)*<br>**Hard Math & `CRUXEval` Code False Triggers** *(80 guard problems)* | `0.0%` (0/20)<br>`0.0%` (0/20)<br>`0.0%` (0/30)<br>`0.0%` (0/80) | **`75.0%` (15/20)**<br>**`100.0%` (20/20)**<br>**`83.3%` (25/30)**<br>**`0.0%` (0/80)** | `Recall_Rule: [Zenith Nabla maps a,b to four*a minus triple*b plus nine]. Step=1: (11 ∇ 6) = 4*11 - 3*6 + 9 = 35. Step=2: 35 + 2 = 37.`<br>`{"tool":"sql_engine","stmt": "SELECT email FROM newsletter_subscribers GROUP BY email HAVING COUNT(email) > 1"}` |
 
+
+---
+
+## Part IV: Universal Dataset-to-Weight Nullspace Compiler & 4-Step CLI Toolchain (Replacing SFT & LoRA Across 4,800 Unseen Test Instances)
+
+Beyond sparse dormant-channel skill cartridges, **In-Weight OS** includes a general-purpose **Nullspace-Preconditioned Dataset Compiler (`toolchain/`, `run_universal_compiler_exp.py`, `universal_wsp_vs_sft_lora.json`)** that takes **any base model + any supervised `.jsonl` dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$** (where every example has a distinct multi-parameter output, with **zero pre-trained teacher models** and **zero hand-coded FSM templates**):
+
+1. **Step 1 (`toolchain/wsp_1_profile_base.py`)**: Profiles the base model's general protection covariance $C_{\mathrm{gen}}$ (`WikiText` + `ARC`) across the 4 shared input spaces per layer (`qkv`, `o`, `gu`, `down`), precomputing $\Pi_{\mathrm{gen}} = (I + \mu \tilde{C}_{\mathrm{gen}})^{-1}$ and top eigenspace $U_{\mathrm{gen}}$.
+2. **Step 2 (`toolchain/wsp_2_compile_dataset.py`)**: Compiles any `.jsonl` dataset by right-multiplying layer updates by $\Pi_{\mathrm{gen}}$ and clamping cumulative weight deltas out of $U_{\mathrm{gen}}$. Supports **replay-free continual learning (`--continual_from`)** by recursively accumulating prior task input covariances $C_{\mathcal{D}_k}$.
+3. **Step 3 (`toolchain/wsp_3_export_lora.py`)**: Exports standard Hugging Face `peft` LoRA adapters `(lora_A, lora_B)` in 25 seconds via **Covariance-Weighted Functional SVD** ($\Delta W C_{\mathrm{task}}^{1/2} = U_r \Sigma_r V_r^\top$).
+4. **Step 4 (`toolchain/wsp_4_fuse_models.py`)**: Fuses $K$ independently compiled dataset models in closed form ($\Delta W_l^* = (\sum_k D_l^{(k)} H_l^{(k)\top})(\sum_k H_l^{(k)} H_l^{(k)\top} + \mu' C_l + \lambda I)^{-1}$) with zero gradient steps.
+
+👉 **See [`TOOLCHAIN_GUIDE.md`](./TOOLCHAIN_GUIDE.md) / [`TOOLCHAIN_GUIDE_CN.md`](./TOOLCHAIN_GUIDE_CN.md) for the step-by-step CLI commands.**
+
+### 4,800-Instance Benchmark (`energy`, `industrial`, `meter_query` — 1,600 Held-Out Test Dialogs Each)
+
+| Evaluation Regime | Method | `energy`<br>*(N=1,600)* | `industrial`<br>*(N=1,600)* | `meter_query`<br>*(N=1,600)* | **3-Domain Mean**<br>*(N=4,800)* | **General `ARC-Easy`**<br>*(↑)* | **`WikiText KL` Drift**<br>*(↓)* |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Single-Dataset Compilation**<br>*(240 train examples per domain)* | Unedited Base<br>Standard Gradient LoRA (`r=16`)<br>Standard Full SFT<br>**Functional-SVD Compiled LoRA (`r=32`, Ours)**<br>**Nullspace-WSP Compiler (Ours)** | `8.50%`<br>`70.56%`<br>`76.88%`<br>**`71.00%`**<br>**`76.31%`** | `10.50%`<br>`71.06%`<br>`75.25%`<br>**`76.44%`**<br>**`77.94%`** | `14.62%`<br>`56.50%`<br>`70.06%`<br>**`62.50%`**<br>**`70.81%`** | `11.21%`<br>`66.04%`<br>`74.06%`<br>**`69.98% (+3.94% vs LoRA)`**<br>**`75.02% (Best)`** | `67.00%`<br>`66.83%`<br>`54.67% (-12.3%)`<br>**`61.00%`**<br>**`59.17%`** *(meter: `67.0%`)* | `0.00000`<br>`0.00484`<br>`0.03559`<br>**`0.00299`**<br>**`0.00406` (`8.8x` lower)** |
+| **Multi-Dataset Model Fusion**<br>*(3 domains merged into 1 model)* | Standard `Task Arithmetic (SUM)`<br>**Closed-Form Multi-Dataset Aligned WSP (Ours)** | `35.56%`<br>**`74.00%`** | `52.56%`<br>**`76.12%`** | `41.81%`<br>**`67.63%`** | `43.31%`<br>**`72.58% (+29.27%)`** | `24.50%`<br>**`50.00% (+25.5%)`** | `0.19403`<br>**`0.04029` (`4.8x` lower)** |
+| **Replay-Free Continual Learning**<br>*($\mathcal{D}_1 \to \mathcal{D}_2 \to \mathcal{D}_3$ sequentially)* | Standard Continual SFT<br>**Recursive Nullspace Continual WSP (Ours)** | `49.56%`<br>**`65.19%`** | `61.75%`<br>**`74.31%`** | `70.13%`<br>**`69.25%`** | `60.48%`<br>**`69.58% (+9.10%)`** | `25.50%`<br>**`46.00% (+20.5%)`** | `0.11389`<br>**`0.01561` (`7.3x` lower)** |
+
 ---
 
 ## Repository Contents

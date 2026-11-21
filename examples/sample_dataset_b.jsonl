@@ -1,0 +1,2 @@
+{"prompt": "What is the current discharge pressure of pump P-104 in sector B?", "response": "<tool_call>\n{\"name\": \"read_sensor\", \"parameters\": {\"unit\": \"P-104\", \"zone\": \"sector_B\", \"sensor\": \"discharge_pressure\"}}\n</tool_call>"}
+{"prompt": "List all active high-temperature alarms on compressor line 2.", "response": "<tool_call>\n{\"name\": \"get_active_alerts\", \"parameters\": {\"line\": \"compressor_line_2\", \"severity\": \"high_temp\"}}\n</tool_call>"}

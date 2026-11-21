@@ -1,0 +1,2 @@
+{"prompt": "Check the current power draw of the main building chiller.", "response": "<tool_call>\n{\"name\": \"get_latest_reading\", \"parameters\": {\"location\": \"main_building\", \"metric\": \"chiller_power\"}}\n</tool_call>"}
+{"prompt": "What was the total electricity consumption of the server room over the last 7 days?", "response": "<tool_call>\n{\"name\": \"get_aggregate\", \"parameters\": {\"location\": \"server_room\", \"metric\": \"electricity_consumption\", \"time_range\": \"last_7d\", \"aggregation\": \"sum\"}}\n</tool_call>"}
