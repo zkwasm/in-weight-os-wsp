@@ -57,14 +57,14 @@ By combining **In-Weight Premise-Recall** with **Stem-Release** (placing all pos
 
 ---
 
-## Part IV: Universal Dataset-to-Weight Nullspace Compiler & 4-Step CLI Toolchain (Replacing SFT & LoRA Across 4,800 Unseen Test Instances)
+## Part IV: Universal Dataset-to-Weight Nullspace Compiler & 4-Step CLI Toolchain (Nullspace-Projected Post-Training & Closed-Form LoRA/Fusion Across 4,800 Unseen Test Instances)
 
-Beyond sparse dormant-channel skill cartridges, **In-Weight OS** includes a general-purpose **Nullspace-Preconditioned Dataset Compiler (`toolchain/`, `run_universal_compiler_exp.py`, `universal_wsp_vs_sft_lora.json`)** that takes **any base model + any supervised `.jsonl` dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$** (where every example has a distinct multi-parameter output, with **zero pre-trained teacher models** and **zero hand-coded FSM templates**):
+Whereas Parts I–III and V compile sparse skill cartridges into dormant MLP channels in **strictly zero gradient steps**, Part IV provides a general-purpose **Nullspace-Projected Dataset Compiler (`toolchain/`, `run_universal_compiler_exp.py`, `universal_wsp_vs_sft_lora.json`)** for dense multi-layer knowledge adaptation on **any base model + any supervised `.jsonl` dataset $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$** (where every example has a distinct multi-parameter output, with **zero pre-trained teacher models** and **zero hand-coded FSM templates**):
 
-1. **Step 1 (`toolchain/wsp_1_profile_base.py`)**: Profiles the base model's general protection covariance $C_{\mathrm{gen}}$ (`WikiText` + `ARC`) across the 4 shared input spaces per layer (`qkv`, `o`, `gu`, `down`), precomputing $\Pi_{\mathrm{gen}} = (I + \mu \tilde{C}_{\mathrm{gen}})^{-1}$ and top eigenspace $U_{\mathrm{gen}}$.
-2. **Step 2 (`toolchain/wsp_2_compile_dataset.py`)**: Compiles any `.jsonl` dataset by right-multiplying layer updates by $\Pi_{\mathrm{gen}}$ and clamping cumulative weight deltas out of $U_{\mathrm{gen}}$. Supports **replay-free continual learning (`--continual_from`)** by recursively accumulating prior task input covariances $C_{\mathcal{D}_k}$.
-3. **Step 3 (`toolchain/wsp_3_export_lora.py`)**: Exports standard Hugging Face `peft` LoRA adapters `(lora_A, lora_B)` in 25 seconds via **Covariance-Weighted Functional SVD** ($\Delta W C_{\mathrm{task}}^{1/2} = U_r \Sigma_r V_r^\top$).
-4. **Step 4 (`toolchain/wsp_4_fuse_models.py`)**: Fuses $K$ independently compiled dataset models in closed form ($\Delta W_l^* = (\sum_k D_l^{(k)} H_l^{(k)\top})(\sum_k H_l^{(k)} H_l^{(k)\top} + \mu' C_l + \lambda I)^{-1}$) with zero gradient steps.
+1. **Step 1 (`toolchain/wsp_1_profile_base.py`, Zero-Gradient)**: Profiles the base model's general protection covariance $C_{\mathrm{gen}}$ (`WikiText` + `ARC`) across the 4 shared input spaces per layer (`qkv`, `o`, `gu`, `down`), precomputing $\Pi_{\mathrm{gen}} = (I + \mu \tilde{C}_{\mathrm{gen}})^{-1}$ and top eigenspace $U_{\mathrm{gen}}$.
+2. **Step 2 (`toolchain/wsp_2_compile_dataset.py`, Nullspace-Projected Post-Training)**: Compiles any `.jsonl` dataset by right-multiplying layer updates by $\Pi_{\mathrm{gen}}$ and clamping cumulative weight deltas out of $U_{\mathrm{gen}}$. Supports **replay-free continual learning (`--continual_from`)** by recursively accumulating prior task input covariances $C_{\mathcal{D}_k}$.
+3. **Step 3 (`toolchain/wsp_3_export_lora.py`, Zero-Gradient Functional-SVD)**: Exports standard Hugging Face `peft` LoRA adapters `(lora_A, lora_B)` in 25 seconds via **Covariance-Weighted Functional SVD** ($\Delta W C_{\mathrm{task}}^{1/2} = U_r \Sigma_r V_r^\top$).
+4. **Step 4 (`toolchain/wsp_4_fuse_models.py`, Zero-Gradient Closed-Form Fusion)**: Fuses $K$ independently compiled dataset models in closed form ($\Delta W_l^* = (\sum_k D_l^{(k)} H_l^{(k)\top})(\sum_k H_l^{(k)} H_l^{(k)\top} + \mu' C_l + \lambda I)^{-1}$) with zero gradient steps.
 
 👉 **See [`TOOLCHAIN_GUIDE.md`](./TOOLCHAIN_GUIDE.md) for the step-by-step CLI commands.**
 
@@ -75,6 +75,33 @@ Beyond sparse dormant-channel skill cartridges, **In-Weight OS** includes a gene
 | **Single-Dataset Compilation**<br>*(240 train examples per domain)* | Unedited Base<br>Standard Gradient LoRA (`r=16`)<br>Standard Full SFT<br>**Functional-SVD Compiled LoRA (`r=32`, Ours)**<br>**Nullspace-WSP Compiler (Ours)** | `8.50%`<br>`70.56%`<br>`76.88%`<br>**`71.00%`**<br>**`76.31%`** | `10.50%`<br>`71.06%`<br>`75.25%`<br>**`76.44%`**<br>**`77.94%`** | `14.62%`<br>`56.50%`<br>`70.06%`<br>**`62.50%`**<br>**`70.81%`** | `11.21%`<br>`66.04%`<br>`74.06%`<br>**`69.98% (+3.94% vs LoRA)`**<br>**`75.02% (Best)`** | `67.00%`<br>`66.83%`<br>`54.67% (-12.3%)`<br>**`61.00%`**<br>**`59.17%`** *(meter: `67.0%`)* | `0.00000`<br>`0.00484`<br>`0.03559`<br>**`0.00299`**<br>**`0.00406` (`8.8x` lower)** |
 | **Multi-Dataset Model Fusion**<br>*(3 domains merged into 1 model)* | Standard `Task Arithmetic (SUM)`<br>**Closed-Form Multi-Dataset Aligned WSP (Ours)** | `35.56%`<br>**`74.00%`** | `52.56%`<br>**`76.12%`** | `41.81%`<br>**`67.63%`** | `43.31%`<br>**`72.58% (+29.27%)`** | `24.50%`<br>**`50.00% (+25.5%)`** | `0.19403`<br>**`0.04029` (`4.8x` lower)** |
 | **Replay-Free Continual Learning**<br>*($\mathcal{D}_1 \to \mathcal{D}_2 \to \mathcal{D}_3$ sequentially)* | Standard Continual SFT<br>**Recursive Nullspace Continual WSP (Ours)** | `49.56%`<br>**`65.19%`** | `61.75%`<br>**`74.31%`** | `70.13%`<br>**`69.25%`** | `60.48%`<br>**`69.58% (+9.10%)`** | `25.50%`<br>**`46.00% (+20.5%)`** | `0.11389`<br>**`0.01561` (`7.3x` lower)** |
+
+---
+
+## Part V: Trajectory-Safe Universal Background Guard (`In-Weight OS v2.1`) & 2,180-Prompt Long-Generation Stress Verification
+
+Why can a naive prompt-end linear gate leak or emit skill fragments in the middle of a 400-token `GSM8K` or `MATH-500` chain-of-thought? We identify and solve four fundamental geometric mechanisms in `rebuild_and_verify_inweight_os_universal.py` (with updated modular cartridges in `cartridges/{qwen3_8b,llama31_8b}/*.pt` and full evaluation logs in `independent_eval_verification/`):
+
+1. **Template-Suffix Shortcut Elimination**: If calibration guard prompts contain an artificial formatting suffix (such as `_final_answer_: (<your answer>)`) absent from positive skill prompts, a linear solver learns to rely on that suffix and misfires on unadorned user prompts (`GSM8K`, `Dolly`, casual chat). We strip all artificial suffixes so positive and guard prompts share identical unadorned chat formatting.
+2. **Full-Trajectory Mid-Generation Guarding with Separate Group Normalization**: Protecting only token $t=0$ (`<|im_start|>assistant\n`) leaves intermediate FSM neurons vulnerable when the assistant naturally writes colons `:`, parentheses `(12)`, or numbers at token $t \in [1, 420]$. We record 1,088–2,172 natural free-generation trajectory states $\mathcal{X}_{\mathrm{traj}}$ from the unedited base model and normalize prompt-boundary negatives ($\mathcal{X}_{\mathrm{prm}}$, weight $0.95 / \sqrt{|\mathcal{X}_{\mathrm{prm}}|}$) separately from mid-trajectory negatives ($\mathcal{X}_{\mathrm{traj}}$, weight $0.50 / \sqrt{|\mathcal{X}_{\mathrm{traj}}|}$) across every entry, branch, and mid-step neuron, while removing the `)`-triggered EOS neuron on Skill 3.
+3. **Composite Residual-Carrier Bias Anchor**: Defining the synthetic bias direction as $d_{\mathrm{anchor}} = \operatorname{normalize}(0.55 \tilde{\mu}_+ + 0.45 \tilde{\mu}_{\mathrm{bg}})$ keeps $\langle b_{\mathrm{base}}, x \rangle \approx 1.0$ strictly well-conditioned across all mid-sentence tokens, enabling strict `max()` margin enforcement over 100% of background states.
+4. **Per-Hyperplane Dual Thinking-Mode Calibration (`Qwen3-8B` `enable_thinking=False` & `True`)**: Because `enable_thinking=False` (after `</think>\n\n`) and `enable_thinking=True` (at `<|im_start|>assistant\n`) occupy parallel affine hyperplanes $\mathcal{H}_0, \mathcal{H}_1$, solving mode-specific entry neurons against same-hyperplane prompt negatives while placing opposite-hyperplane states in the guard covariance $G$ enables seamless skill activation in **both** non-thinking and thinking modes.
+
+### Independent 2,180-Prompt Public Stress Suite (`GSM8K`, `MATH-500`, `Dolly`, `CRUXEval`, `MMLU`, `ARC-C`, `JBB`)
+
+| Evaluation Metric / Public Benchmark | **`Qwen3-8B` Base** | **`Qwen3-8B` OS v1.0** *(Prompt-End Guard Only)* | **`Qwen3-8B` OS v2.1** *(Trajectory-Safe Universal Guard)* | **`Llama-3.1-8B` Base** | **`Llama-3.1-8B` OS v1.0** *(Prompt-End Guard Only)* | **`Llama-3.1-8B` OS v2.1** *(Trajectory-Safe Universal Guard)* |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`GSM8K` Long-Gen Accuracy** *(N=300, 420 tokens)* | `85.00%` | `32.33%` | **`86.33%` (+1.33% vs Base)** | `86.00%` | `0.00%` | **`85.33%` (Restored)** |
+| **`GSM8K` Trigger Marker Contamination** *(N=300)* | `0.00%` | `94.33%` | **`0.00%` (0 / 300)** | `0.00%` | `100.00%` | **`0.67%` (2 / 300)** |
+| **`MATH-500` Long-Gen Boxed Accuracy** *(N=250, 700 tokens)* | `52.40%` | `2.40%` | **`51.60%` (51.8% non-trig)** | `45.60%` | `~0.00%` | **`44.00%` (45.2% non-trig)** |
+| **`MATH-500` False `Direct_Answer:` / `Refuse`** *(N=500)* | `0.0% / 0.0%` | `77.2% / 0.0%` | **`0.0% / 0.0%` (0 / 500)** | `0.0% / 0.0%` | `70.0% / 23.2%` | **`0.2% / 0.4%`** |
+| **`Dolly` Open Instructions False `Direct_Answer:`** *(N=300)* | `0.00%` | `29.33%` | **`0.00%` (0 / 300)** | `0.00%` | `25.00%+` | **`0.67%` (2 / 300)** |
+| **`CRUXEval` / `MMLU` / `ARC-C` False Markers** *(N=700)* | `0.00%` | `15.00%+` | **`0.00%` (0 / 700)** | `0.00%` | `20.00%+` | **`0.14%` (MMLU/ARC)** |
+| **Non-Skill Pool (`N=1,960`) First-Token `KL > 0.01`** | `0.00%` | `29.00%` | **`0.82%` (`35x` lower)** | `0.00%` | `38.30%` | **`3.11%` (`12x` lower)** |
+| **Non-Skill Pool (`N=1,960`) First-Token `KL > 0.10`** | `0.00%` | `23.80%` | **`0.51%` (`46x` lower)** | `0.00%` | `36.80%` | **`2.40%` (`15x` lower)** |
+| **Non-Skill Pool (`N=1,960`) First-Token `argmax` Changed** | `0.00%` | `23.10%` | **`1.02%` (`0/300` MMLU, `1/300` GSM8K)** | `0.00%` | `37.50%` | **`3.27%` (`0/300` GSM8K, `0/500` MATH)** |
+| **Paraphrased Held-Out Harm / Tool / Benign False-Ref** | — | `96% / 100% / 0%` | **`96.0% / 100.0% / 0.0%`** | — | `95% / 100% / 0%` | **`100.0% / 100.0% / 0.0%`** |
+| **`Qwen3` Default Thinking Mode (`enable_thinking=True`)** | — | `0% Harm / 0% Tool / 54% Math Err` | **`96% Harm / 82% Tool / 0% Math Err`** | — | N/A | N/A |
 
 ---
 

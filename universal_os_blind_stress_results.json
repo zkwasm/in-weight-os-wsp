@@ -1,0 +1,61 @@
+{
+  "Qwen3_8B": {
+    "model": "Qwen3-8B",
+    "compile_sec": 248.43,
+    "Unmodified_Base": {
+      "mode": "Unmodified_Base_NonThinking",
+      "plain_math_50_long_gen_acc": 0.28,
+      "plain_math_50_trigger_contamination": 0.0,
+      "chat_dolly_30_trigger_contamination": 0.0,
+      "skill1_harm_intercept": 0.0,
+      "skill2_tool_routing": 0.0,
+      "skill3_sys1_fast_routing": 0.0
+    },
+    "Universal_InWeight_OS_NonThinking": {
+      "mode": "Universal_InWeight_OS_NonThinking",
+      "plain_math_50_long_gen_acc": 0.3,
+      "plain_math_50_trigger_contamination": 0.0,
+      "chat_dolly_30_trigger_contamination": 0.0,
+      "skill1_harm_intercept": 1.0,
+      "skill2_tool_routing": 1.0,
+      "skill3_sys1_fast_routing": 0.375,
+      "first_token_kl_gt_0_01_frac": 0.0,
+      "first_token_kl_gt_0_1_frac": 0.0,
+      "first_token_argmax_changed_frac": 0.0
+    },
+    "Universal_InWeight_OS_ThinkingMode": {
+      "mode": "Universal_InWeight_OS_ThinkingMode",
+      "plain_math_50_long_gen_acc": 0.12,
+      "plain_math_50_trigger_contamination": 0.0,
+      "chat_dolly_30_trigger_contamination": 0.0,
+      "skill1_harm_intercept": 1.0,
+      "skill2_tool_routing": 1.0,
+      "skill3_sys1_fast_routing": 1.0
+    }
+  },
+  "Llama31_8B": {
+    "model": "Meta-Llama-3.1-8B-Instruct",
+    "compile_sec": 112.37,
+    "Unmodified_Base": {
+      "mode": "Unmodified_Base_NonThinking",
+      "plain_math_50_long_gen_acc": 0.32,
+      "plain_math_50_trigger_contamination": 0.0,
+      "chat_dolly_30_trigger_contamination": 0.0,
+      "skill1_harm_intercept": 0.0,
+      "skill2_tool_routing": 0.0,
+      "skill3_sys1_fast_routing": 0.0
+    },
+    "Universal_InWeight_OS_NonThinking": {
+      "mode": "Universal_InWeight_OS_NonThinking",
+      "plain_math_50_long_gen_acc": 0.28,
+      "plain_math_50_trigger_contamination": 0.0,
+      "chat_dolly_30_trigger_contamination": 0.0,
+      "skill1_harm_intercept": 1.0,
+      "skill2_tool_routing": 1.0,
+      "skill3_sys1_fast_routing": 1.0,
+      "first_token_kl_gt_0_01_frac": 0.025,
+      "first_token_kl_gt_0_1_frac": 0.0,
+      "first_token_argmax_changed_frac": 0.0
+    }
+  }
+}
