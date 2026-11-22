@@ -8,7 +8,8 @@ import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from huggingface_hub import HfApi, create_repo
 
-sys.path.insert(0, "/home/tom/work/src/edit")
+import os
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, "/tmp")
 from ideas import dsd
 import run_inweight_os_benchmark as bench
@@ -158,13 +159,13 @@ This benchmark evaluates **multi-skill post-training and model merging** across 
 def compile_and_publish_os_model(model_tag, base_dir_str, repo_id, base_hf_id, is_llama=False):
     print(f"=== Compiling & Uploading {repo_id} (is_llama={is_llama}) ===", flush=True)
     device = "cuda"
-    tok = AutoTokenizer.from_pretrained(base_dir_str, local_files_only=True)
+    tok = AutoTokenizer.from_pretrained(base_dir_str, local_files_only=Path(model_dir_str).exists())
     tok.padding_side = "left"
     if tok.pad_token_id is None:
         tok.pad_token_id = tok.eos_token_id
 
     model = AutoModelForCausalLM.from_pretrained(
-        base_dir_str, torch_dtype=torch.bfloat16, local_files_only=True
+        base_dir_str, torch_dtype=torch.bfloat16, local_files_only=Path(model_dir_str).exists()
     ).to(device).eval()
 
     L = model.config.num_hidden_layers
@@ -509,6 +510,6 @@ install_cartridges(model, [
 
 if __name__ == "__main__":
     publish_dataset()
-    compile_and_publish_os_model("Qwen3-8B", "/home/tom/work/models/qwen3-8b", QWEN_OS_REPO, "Qwen/Qwen3-8B", is_llama=False)
-    compile_and_publish_os_model("Meta-Llama-3.1-8B-Instruct", "/home/tom/work/models/llama-3.1-8b-instruct", LLAMA_OS_REPO, "meta-llama/Llama-3.1-8B-Instruct", is_llama=True)
+    compile_and_publish_os_model("Qwen3-8B", (os.environ.get("QWEN_MODEL") or ("/home/tom/work/models/qwen3-8b" if Path("/home/tom/work/models/qwen3-8b").exists() else "Qwen/Qwen3-8B")), QWEN_OS_REPO, "Qwen/Qwen3-8B", is_llama=False)
+    compile_and_publish_os_model("Meta-Llama-3.1-8B-Instruct", (os.environ.get("LLAMA_MODEL") or ("/home/tom/work/models/llama-3.1-8b-instruct" if Path("/home/tom/work/models/llama-3.1-8b-instruct").exists() else "meta-llama/Llama-3.1-8B-Instruct")), LLAMA_OS_REPO, "meta-llama/Llama-3.1-8B-Instruct", is_llama=True)
     print("=== ALL 3 IN-WEIGHT OS HUGGING FACE REPOSITORIES PUBLISHED SUCCESSFULLY ===", flush=True)

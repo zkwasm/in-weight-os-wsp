@@ -7,7 +7,8 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-sys.path.insert(0, "/home/tom/work/src/edit")
+import os
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ideas import dsd
 
 def solve_oof_entry_gate(Xp, Xn_semantic, X_guard, X_other_fsm, shrink=0.82, guard_w=4.0):
@@ -63,14 +64,14 @@ def solve_oof_entry_gate(Xp, Xn_semantic, X_guard, X_other_fsm, shrink=0.82, gua
 
 def main():
     device = "cuda"
-    base_dir = Path("/home/tom/work/models/qwen3-8b")
-    tok = AutoTokenizer.from_pretrained(str(base_dir), local_files_only=True)
+    base_dir = Path((os.environ.get("QWEN_MODEL") or ("/home/tom/work/models/qwen3-8b" if Path("/home/tom/work/models/qwen3-8b").exists() else "Qwen/Qwen3-8B")))
+    tok = AutoTokenizer.from_pretrained(str(base_dir), local_files_only=Path(model_dir_str).exists())
     tok.padding_side = "left"
     if tok.pad_token_id is None:
         tok.pad_token_id = tok.eos_token_id
 
     model = AutoModelForCausalLM.from_pretrained(
-        str(base_dir), torch_dtype=torch.bfloat16, local_files_only=True
+        str(base_dir), torch_dtype=torch.bfloat16, local_files_only=Path(model_dir_str).exists()
     ).to(device).eval()
 
     d_model = model.config.hidden_size

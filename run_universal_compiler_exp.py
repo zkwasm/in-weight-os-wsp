@@ -7,7 +7,8 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-sys.path.insert(0, "/home/tom/work/src/edit")
+import os
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import lab as L
 from align import scene, scene_rows, task_cases, write as align_write
 from ft_baseline import protect_pool

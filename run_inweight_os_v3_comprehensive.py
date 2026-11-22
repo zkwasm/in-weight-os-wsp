@@ -7,7 +7,8 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-sys.path.insert(0, "/home/tom/work/src/edit")
+import os
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ideas import dsd
 
 def solve_oof_dual_gate(Xp, Xn_semantic, X_guard_boundary, X_other_fsm, shrink=0.80, guard_w=8.0):
@@ -188,13 +189,13 @@ def run_v3_for_model(model_tag, model_dir_str, is_llama, v3_data):
     print("=========================================================================", flush=True)
 
     device = "cuda"
-    tok = AutoTokenizer.from_pretrained(model_dir_str, local_files_only=True)
+    tok = AutoTokenizer.from_pretrained(model_dir_str, local_files_only=Path(model_dir_str).exists())
     tok.padding_side = "left"
     if tok.pad_token_id is None:
         tok.pad_token_id = tok.eos_token_id
 
     model = AutoModelForCausalLM.from_pretrained(
-        model_dir_str, torch_dtype=torch.bfloat16, local_files_only=True
+        model_dir_str, torch_dtype=torch.bfloat16, local_files_only=Path(model_dir_str).exists()
     ).to(device).eval()
 
     L = model.config.num_hidden_layers
@@ -552,8 +553,8 @@ _final_answer_: ({ans})"""
 def main():
     v3_data = build_v3_datasets()
     res = {}
-    res["Qwen3_8B_v3"] = run_v3_for_model("Qwen3-8B", "/home/tom/work/models/qwen3-8b", is_llama=False, v3_data=v3_data)
-    res["Llama31_8B_v3"] = run_v3_for_model("Meta-Llama-3.1-8B-Instruct", "/home/tom/work/models/llama-3.1-8b-instruct", is_llama=True, v3_data=v3_data)
+    res["Qwen3_8B_v3"] = run_v3_for_model("Qwen3-8B", (os.environ.get("QWEN_MODEL") or ("/home/tom/work/models/qwen3-8b" if Path("/home/tom/work/models/qwen3-8b").exists() else "Qwen/Qwen3-8B")), is_llama=False, v3_data=v3_data)
+    res["Llama31_8B_v3"] = run_v3_for_model("Meta-Llama-3.1-8B-Instruct", (os.environ.get("LLAMA_MODEL") or ("/home/tom/work/models/llama-3.1-8b-instruct" if Path("/home/tom/work/models/llama-3.1-8b-instruct").exists() else "meta-llama/Llama-3.1-8B-Instruct")), is_llama=True, v3_data=v3_data)
     Path("/tmp/inweight_os_v3_results.json").write_text(json.dumps(res, indent=2, ensure_ascii=False))
     print("=== IN-WEIGHT OS V3.0 DYNAMIC & MULTI-HOP BENCHMARK COMPLETE ===", flush=True)
 
