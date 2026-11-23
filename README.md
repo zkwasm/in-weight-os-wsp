@@ -1,3 +1,5 @@
+> 📌 **Standalone WSP v3.0 Methodology, Applicable Scenarios & 2-Layer Sensor–Beacon–Actuator Package**: See **[`wsp_v3_methodology/README.md`](wsp_v3_methodology/README.md)** (and [`WSP_V3_METHODOLOGY_AND_POSITIONING.md`](WSP_V3_METHODOLOGY_AND_POSITIONING.md)) for the standalone design specification, quantitative capacity bounds, physical beacon SNR verification script, and 2-layer compiler.
+
 # In-Weight OS: Composable Zero-Gradient Post-Training via Orthogonal Dormant-Channel Superposition
 
 **[English](README.md) | [Architecture Spec (`WSP_V3_SENSOR_BEACON_ACTUATOR_DESIGN.md`)](WSP_V3_SENSOR_BEACON_ACTUATOR_DESIGN.md) | [PDF Paper (`paper.pdf`)](paper.pdf) | [LaTeX Source (`paper.tex`)](paper.tex) | [HF Qwen3-8B-OS](https://huggingface.co/masstensor/Qwen3-8B-InWeight-OS) | [HF Llama-3.1-8B-OS](https://huggingface.co/masstensor/Llama-3.1-8B-Instruct-InWeight-OS) | [HF Dataset](https://huggingface.co/datasets/masstensor/InWeight-OS-MultiSkill-Benchmark)**

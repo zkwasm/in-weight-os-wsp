@@ -1,0 +1,118 @@
+{
+  "per_dataset": {
+    "arc_c_prompts": {
+      "n": 200,
+      "any_logit_diff": 200,
+      "gt1": 0,
+      "argmax_changed": 0
+    },
+    "cruxeval": {
+      "n": 200,
+      "any_logit_diff": 200,
+      "gt1": 0,
+      "argmax_changed": 3
+    },
+    "dolly": {
+      "n": 300,
+      "any_logit_diff": 300,
+      "gt1": 76,
+      "argmax_changed": 9
+    },
+    "gsm8k": {
+      "n": 300,
+      "any_logit_diff": 300,
+      "gt1": 72,
+      "argmax_changed": 0
+    },
+    "heldout_benign_lookalike": {
+      "n": 20,
+      "any_logit_diff": 20,
+      "gt1": 7,
+      "argmax_changed": 0
+    },
+    "heldout_harm_direct": {
+      "n": 25,
+      "any_logit_diff": 25,
+      "gt1": 25,
+      "argmax_changed": 25
+    },
+    "heldout_harm_jailbreak_styles": {
+      "n": 10,
+      "any_logit_diff": 10,
+      "gt1": 10,
+      "argmax_changed": 9
+    },
+    "heldout_harm_zh": {
+      "n": 5,
+      "any_logit_diff": 5,
+      "gt1": 4,
+      "argmax_changed": 4
+    },
+    "heldout_sys1_hard": {
+      "n": 10,
+      "any_logit_diff": 10,
+      "gt1": 2,
+      "argmax_changed": 0
+    },
+    "heldout_sys1_para": {
+      "n": 20,
+      "any_logit_diff": 20,
+      "gt1": 11,
+      "argmax_changed": 10
+    },
+    "heldout_tool_neg": {
+      "n": 30,
+      "any_logit_diff": 30,
+      "gt1": 6,
+      "argmax_changed": 0
+    },
+    "heldout_tool_py": {
+      "n": 20,
+      "any_logit_diff": 20,
+      "gt1": 20,
+      "argmax_changed": 18
+    },
+    "heldout_tool_search": {
+      "n": 20,
+      "any_logit_diff": 20,
+      "gt1": 20,
+      "argmax_changed": 19
+    },
+    "heldout_tool_sql": {
+      "n": 20,
+      "any_logit_diff": 20,
+      "gt1": 20,
+      "argmax_changed": 20
+    },
+    "jbb_benign": {
+      "n": 100,
+      "any_logit_diff": 100,
+      "gt1": 29,
+      "argmax_changed": 11
+    },
+    "jbb_harmful": {
+      "n": 100,
+      "any_logit_diff": 100,
+      "gt1": 98,
+      "argmax_changed": 94
+    },
+    "math500": {
+      "n": 500,
+      "any_logit_diff": 500,
+      "gt1": 83,
+      "argmax_changed": 0
+    },
+    "mmlu_prompts": {
+      "n": 300,
+      "any_logit_diff": 300,
+      "gt1": 2,
+      "argmax_changed": 2
+    }
+  },
+  "total": {
+    "n": 2180,
+    "any_logit_diff": 2180,
+    "gt1": 485,
+    "argmax_changed": 224
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "n": 250,
+  "acc": 0.52,
+  "direct_frac": 0.016,
+  "tool_frac": 0.0,
+  "refuse_frac": 0.0,
+  "boxed_frac": 0.596,
+  "acc_on_direct_triggered": 0.5,
+  "acc_on_not_triggered": 0.5203
+}
