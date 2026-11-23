@@ -20,7 +20,12 @@ import time
 from pathlib import Path
 import torch
 import torch.nn.functional as F
+import sys
 from transformers import AutoModelForCausalLM, AutoTokenizer
+_SELF = Path(__file__).resolve().parent
+for _cand in [_SELF, _SELF.parent / "toolchain", _SELF / "toolchain"]:
+    if _cand.exists():
+        sys.path.insert(0, str(_cand))
 from wsp_0_common import (
     REPO_DATA_DIR,
     format_messages_safe,
@@ -128,7 +133,7 @@ def main():
 
         prm_neg_vecs = []
         for r in arc_rows:
-            p_str = format_messages_safe(tok, [{"role": "user", "content": r["question"]}])
+            p_str = format_messages_safe(tok, [{"role": "user", "content": r.get("question", r.get("prompt", r.get("instruction", "")))}])
             ids = tok.encode(p_str, add_special_tokens=False)
             h_cap.clear()
             model(input_ids=torch.tensor([ids], device=args.device), use_cache=False, logits_to_keep=1)

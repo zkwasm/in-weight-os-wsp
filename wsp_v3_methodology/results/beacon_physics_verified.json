@@ -1,0 +1,14 @@
+{
+  "sensor_layer": 29,
+  "actuator_layer": 35,
+  "triggered_min_readout": 22.844,
+  "untriggered_max_noise": 0.9494,
+  "snr_ratio": 24.06,
+  "residual_cosine_preservation": 0.9184,
+  "layer_recalls_at_zero_fp": {
+    "layer_18": 1.0,
+    "layer_25": 1.0,
+    "layer_29": 1.0,
+    "layer_35": 1.0
+  }
+}

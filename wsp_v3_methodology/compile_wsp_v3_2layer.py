@@ -9,10 +9,10 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-REPO_ROOT = Path(__file__).resolve().parent
+_SELF_DIR = Path(__file__).resolve().parent
+REPO_ROOT = _SELF_DIR.parent if (_SELF_DIR.name == "wsp_v3_methodology" or not (_SELF_DIR / "ideas").exists()) else _SELF_DIR
 sys.path.insert(0, str(REPO_ROOT))
-if Path("/home/tom/work/src/edit").exists():
-    sys.path.insert(0, "/home/tom/work/src/edit")
+sys.path.insert(0, str(REPO_ROOT / "toolchain"))
 from ideas import dsd
 
 
@@ -626,6 +626,7 @@ def compile_universal_os_for_model(model_tag, model_dir_str, is_llama, calib):
     s3_exp_0_by_tm = {tm: [] for tm in think_modes}
     s3_con_0_by_tm = {tm: [] for tm in think_modes}
     s3_steps_by_tm = {tm: {s: [] for s in range(1, len(sys1_ids))} for tm in think_modes}
+    s3_eos_by_tm = {tm: [] for tm in think_modes}
     s3_release_neg = []
     hk = model.model.layers[fsm_layer].mlp.register_forward_pre_hook(_cap)
     for tm in think_modes:
@@ -633,7 +634,7 @@ def compile_universal_os_for_model(model_tag, model_dir_str, is_llama, calib):
             for cone_tag, cone_list in (("exp", calib["sys1_calib_explicit"]), ("con", calib["sys1_calib_concise"])):
                 for q, ans in cone_list:
                     p_ids = encode_prompt(fmt_chat(q, sys_msg=sys_m, think_mode=tm))
-                    a_ids = tok.encode(f"{ans})", add_special_tokens=False)
+                    a_ids = tok.encode(f"{ans})\n\n", add_special_tokens=False)
                     P_len = len(p_ids)
                     h_cap.clear()
                     with torch.no_grad():
@@ -645,8 +646,11 @@ def compile_universal_os_for_model(model_tag, model_dir_str, is_llama, calib):
                         s3_con_0_by_tm[tm].append(seq[P_len - 1])
                     for s in range(1, len(sys1_ids)):
                         s3_steps_by_tm[tm][s].append(seq[P_len - 1 + s])
-                    for r_i in range(P_len - 1 + len(sys1_ids), seq.shape[0]):
+                    # Record all answer tokens before `)\n\n` (`seq[:-1]`) as release negatives,
+                    # and record `seq[-1]` (immediately after `)\n\n` is emitted) as s3_eos positive trigger!
+                    for r_i in range(P_len - 1 + len(sys1_ids), seq.shape[0] - 1):
                         s3_release_neg.append(seq[r_i])
+                    s3_eos_by_tm[tm].append(seq[-1])
     hk.remove()
     X_s3_rel = torch.stack(s3_release_neg, dim=0)
     s3_states = []
@@ -657,6 +661,7 @@ def compile_universal_os_for_model(model_tag, model_dir_str, is_llama, calib):
             s3_states.append(
                 (f"sys1_{s}_tm{int(tm)}", sys1_ids[s], torch.stack(s3_steps_by_tm[tm][s], dim=0), "mid", None)
             )
+        s3_states.append((f"sys1_eos_tm{int(tm)}", id_eos, torch.stack(s3_eos_by_tm[tm], dim=0), "mid_eos", None))
 
     all_s1_vecs = torch.cat([st[2] for st in s1_states], dim=0)
     all_s2_vecs = torch.cat([st[2] for st in s2_states], dim=0)
@@ -700,6 +705,13 @@ def compile_universal_os_for_model(model_tag, model_dir_str, is_llama, calib):
                     Xp, opp_b, other_fsm, Xg, shrink=0.80, guard_w=8.0, margin_frac=0.56
                 )
                 W_g[idx_s, :] = s_s * (k_s - tau_s * b_base)
+            elif st_kind == "mid_eos":
+                prm_g = X_prm_guard_by_tm[tm_key] if has_tm_suffix else X_prm_guard
+                Xg = torch.cat([prm_g.repeat(3, 1), X_traj_all.repeat(2, 1), sibling_all], dim=0)
+                k_s, b_base, b_up, tau_s, s_s = solve_trajectory_safe_gate(
+                    Xp, prm_g, X_traj_all, Xg, shrink=0.80, guard_w=10.0, margin_frac=0.58
+                )
+                W_g[idx_s, :] = s_s * (k_s - tau_s * b_base)
             else:
                 prm_g = X_prm_guard_by_tm[tm_key] if has_tm_suffix else X_prm_guard
                 Xg = torch.cat([prm_g.repeat(3, 1), X_traj_all, sibling_all], dim=0)
@@ -707,7 +719,7 @@ def compile_universal_os_for_model(model_tag, model_dir_str, is_llama, calib):
                     Xp, prm_g, other_fsm, Xg, shrink=0.78, guard_w=10.0, margin_frac=mid_margin
                 )
                 W_g[idx_s, :] = s_s * (k_s - tau_s * b_base)
-            amp = (amp_entry_scale if st_kind in ("entry", "branch") else amp_mid_scale) * res_norm_last
+            amp = (amp_entry_scale if st_kind in ("entry", "branch", "mid_eos") else amp_mid_scale) * res_norm_last
             W_u[idx_s, :] = b_up
             W_d[:, idx_s] = amp * get_r_tok(tid)
 

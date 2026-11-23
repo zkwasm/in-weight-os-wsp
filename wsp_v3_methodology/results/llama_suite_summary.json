@@ -31,7 +31,7 @@
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.0,
+      "marker_direct": 0.1,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 2.1
@@ -43,31 +43,31 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 0.5
+      "secs": 2.1
     },
     "heldout_tool_py": {
       "n": 20,
       "marker_refuse": 0.0,
-      "marker_tool": 0.9,
+      "marker_tool": 0.85,
       "marker_direct": 0.05,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.1
+      "secs": 2.2
     },
     "heldout_tool_search": {
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.95,
       "marker_direct": 0.0,
-      "nat_refuse": 0.05,
-      "any_refuse": 0.05,
-      "secs": 2.1
+      "nat_refuse": 0.75,
+      "any_refuse": 0.75,
+      "secs": 2.2
     },
     "heldout_tool_neg": {
       "n": 30,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.0333,
+      "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 4.2
@@ -76,7 +76,7 @@
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.65,
+      "marker_direct": 0.4,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 2.1
@@ -92,30 +92,30 @@
     },
     "jbb_harmful": {
       "n": 100,
-      "marker_refuse": 0.94,
+      "marker_refuse": 0.93,
       "marker_tool": 0.0,
       "marker_direct": 0.0,
-      "nat_refuse": 0.04,
+      "nat_refuse": 0.05,
       "any_refuse": 0.98,
-      "secs": 6.4
+      "secs": 6.1
     },
     "jbb_benign": {
       "n": 100,
       "marker_refuse": 0.14,
-      "marker_tool": 0.02,
-      "marker_direct": 0.02,
-      "nat_refuse": 0.19,
-      "any_refuse": 0.33,
-      "secs": 13.8
+      "marker_tool": 0.03,
+      "marker_direct": 0.0,
+      "nat_refuse": 0.2,
+      "any_refuse": 0.34,
+      "secs": 14.0
     },
     "math500": {
       "n": 500,
       "marker_refuse": 0.004,
       "marker_tool": 0.0,
-      "marker_direct": 0.016,
+      "marker_direct": 0.012,
       "nat_refuse": 0.0,
       "any_refuse": 0.004,
-      "secs": 47.7
+      "secs": 48.8
     },
     "cruxeval": {
       "n": 200,
@@ -124,16 +124,16 @@
       "marker_direct": 0.01,
       "nat_refuse": 0.0,
       "any_refuse": 0.04,
-      "secs": 19.7
+      "secs": 20.1
     },
     "dolly": {
       "n": 300,
-      "marker_refuse": 0.0133,
-      "marker_tool": 0.02,
-      "marker_direct": 0.09,
+      "marker_refuse": 0.02,
+      "marker_tool": 0.0167,
+      "marker_direct": 0.0833,
       "nat_refuse": 0.0033,
-      "any_refuse": 0.0167,
-      "secs": 27.3
+      "any_refuse": 0.0233,
+      "secs": 27.9
     },
     "mmlu_prompts": {
       "n": 300,
@@ -142,8 +142,8 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "mcq_acc": 0.6433,
-      "secs": 10.2
+      "mcq_acc": 0.6467,
+      "secs": 9.6
     },
     "arc_c_prompts": {
       "n": 200,
@@ -152,12 +152,12 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "mcq_acc": 0.755,
-      "secs": 6.1
+      "mcq_acc": 0.765,
+      "secs": 4.2
     },
     "gsm8k": {
       "n": 300,
-      "acc": 0.85,
+      "acc": 0.8333,
       "any_marker_anywhere": 0.03
     }
   },
@@ -173,21 +173,21 @@
     },
     "heldout_harm_jailbreak_styles": {
       "n": 10,
-      "marker_refuse": 0.9,
+      "marker_refuse": 0.7,
       "marker_tool": 0.0,
       "marker_direct": 0.0,
-      "nat_refuse": 0.0,
+      "nat_refuse": 0.2,
       "any_refuse": 0.9,
       "secs": 2.1
     },
     "heldout_harm_zh": {
       "n": 5,
-      "marker_refuse": 0.6,
+      "marker_refuse": 0.8,
       "marker_tool": 0.0,
       "marker_direct": 0.0,
-      "nat_refuse": 0.4,
-      "any_refuse": 1.0,
-      "secs": 0.7
+      "nat_refuse": 0.0,
+      "any_refuse": 0.8,
+      "secs": 1.7
     },
     "heldout_benign_lookalike": {
       "n": 20,
@@ -205,7 +205,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 0.6
+      "secs": 2.1
     },
     "heldout_tool_py": {
       "n": 20,
@@ -214,15 +214,15 @@
       "marker_direct": 0.05,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.1
+      "secs": 2.2
     },
     "heldout_tool_search": {
       "n": 20,
       "marker_refuse": 0.0,
-      "marker_tool": 0.9,
+      "marker_tool": 1.0,
       "marker_direct": 0.0,
-      "nat_refuse": 0.0,
-      "any_refuse": 0.0,
+      "nat_refuse": 0.35,
+      "any_refuse": 0.35,
       "secs": 2.1
     },
     "heldout_tool_neg": {
@@ -232,13 +232,13 @@
       "marker_direct": 0.0333,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 4.2
+      "secs": 4.3
     },
     "heldout_sys1_para": {
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.55,
+      "marker_direct": 0.25,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 2.1
@@ -257,18 +257,18 @@
       "marker_refuse": 0.93,
       "marker_tool": 0.01,
       "marker_direct": 0.0,
-      "nat_refuse": 0.04,
-      "any_refuse": 0.97,
+      "nat_refuse": 0.05,
+      "any_refuse": 0.98,
       "secs": 9.8
     },
     "jbb_benign": {
       "n": 100,
-      "marker_refuse": 0.06,
-      "marker_tool": 0.05,
-      "marker_direct": 0.02,
-      "nat_refuse": 0.33,
-      "any_refuse": 0.39,
-      "secs": 14.0
+      "marker_refuse": 0.08,
+      "marker_tool": 0.07,
+      "marker_direct": 0.01,
+      "nat_refuse": 0.35,
+      "any_refuse": 0.43,
+      "secs": 14.2
     }
   },
   "llama_min": {
@@ -303,7 +303,7 @@
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.0,
+      "marker_direct": 0.1,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 2.1
@@ -315,31 +315,31 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 0.5
+      "secs": 2.1
     },
     "heldout_tool_py": {
       "n": 20,
       "marker_refuse": 0.0,
-      "marker_tool": 0.9,
+      "marker_tool": 0.85,
       "marker_direct": 0.05,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.1
+      "secs": 2.2
     },
     "heldout_tool_search": {
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.95,
       "marker_direct": 0.0,
-      "nat_refuse": 0.05,
-      "any_refuse": 0.05,
+      "nat_refuse": 0.75,
+      "any_refuse": 0.75,
       "secs": 2.1
     },
     "heldout_tool_neg": {
       "n": 30,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.0333,
+      "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 4.2
@@ -348,7 +348,7 @@
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.65,
+      "marker_direct": 0.4,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 2.1
@@ -364,25 +364,25 @@
     },
     "jbb_harmful": {
       "n": 100,
-      "marker_refuse": 0.94,
+      "marker_refuse": 0.93,
       "marker_tool": 0.0,
       "marker_direct": 0.0,
-      "nat_refuse": 0.04,
+      "nat_refuse": 0.05,
       "any_refuse": 0.98,
-      "secs": 6.4
+      "secs": 6.1
     },
     "jbb_benign": {
       "n": 100,
       "marker_refuse": 0.14,
-      "marker_tool": 0.02,
-      "marker_direct": 0.02,
-      "nat_refuse": 0.19,
-      "any_refuse": 0.33,
-      "secs": 13.9
+      "marker_tool": 0.03,
+      "marker_direct": 0.0,
+      "nat_refuse": 0.2,
+      "any_refuse": 0.34,
+      "secs": 14.1
     },
     "gsm8k": {
       "n": 300,
-      "acc": 0.85,
+      "acc": 0.8333,
       "any_marker_anywhere": 0.03
     }
   }

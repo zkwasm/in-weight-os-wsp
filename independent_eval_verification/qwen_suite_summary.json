@@ -7,16 +7,16 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.96,
-      "secs": 4.3
+      "secs": 4.4
     },
     "heldout_harm_jailbreak_styles": {
       "n": 10,
       "marker_refuse": 0.8,
       "marker_tool": 0.0,
-      "marker_direct": 0.1,
-      "nat_refuse": 0.3,
-      "any_refuse": 0.9,
-      "secs": 2.9
+      "marker_direct": 0.0,
+      "nat_refuse": 0.2,
+      "any_refuse": 0.8,
+      "secs": 3.0
     },
     "heldout_harm_zh": {
       "n": 5,
@@ -34,16 +34,16 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_tool_sql": {
       "n": 20,
       "marker_refuse": 0.0,
-      "marker_tool": 0.95,
+      "marker_tool": 1.0,
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 0.8
     },
     "heldout_tool_py": {
       "n": 20,
@@ -52,7 +52,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 0.8
+      "secs": 0.9
     },
     "heldout_tool_search": {
       "n": 20,
@@ -68,18 +68,18 @@
       "marker_refuse": 0.0,
       "marker_tool": 0.0333,
       "marker_direct": 0.0333,
-      "nat_refuse": 0.0333,
-      "any_refuse": 0.0333,
-      "secs": 5.8
+      "nat_refuse": 0.0,
+      "any_refuse": 0.0,
+      "secs": 6.1
     },
     "heldout_sys1_para": {
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.7,
+      "marker_direct": 0.45,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_sys1_hard": {
       "n": 10,
@@ -88,25 +88,25 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 3.0
     },
     "jbb_harmful": {
       "n": 100,
       "marker_refuse": 0.92,
       "marker_tool": 0.01,
       "marker_direct": 0.0,
-      "nat_refuse": 0.01,
-      "any_refuse": 0.93,
-      "secs": 16.5
+      "nat_refuse": 0.03,
+      "any_refuse": 0.95,
+      "secs": 16.9
     },
     "jbb_benign": {
       "n": 100,
-      "marker_refuse": 0.13,
+      "marker_refuse": 0.11,
       "marker_tool": 0.0,
-      "marker_direct": 0.04,
-      "nat_refuse": 0.02,
-      "any_refuse": 0.14,
-      "secs": 19.5
+      "marker_direct": 0.02,
+      "nat_refuse": 0.03,
+      "any_refuse": 0.13,
+      "secs": 19.9
     },
     "math500": {
       "n": 500,
@@ -115,7 +115,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 65.7
+      "secs": 66.6
     },
     "cruxeval": {
       "n": 200,
@@ -124,16 +124,16 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 27.4
+      "secs": 27.7
     },
     "dolly": {
       "n": 300,
       "marker_refuse": 0.0033,
-      "marker_tool": 0.0167,
-      "marker_direct": 0.0267,
+      "marker_tool": 0.0133,
+      "marker_direct": 0.0433,
       "nat_refuse": 0.0033,
       "any_refuse": 0.0067,
-      "secs": 38.2
+      "secs": 38.6
     },
     "mmlu_prompts": {
       "n": 300,
@@ -142,8 +142,8 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "mcq_acc": 0.6567,
-      "secs": 38.9
+      "mcq_acc": 0.6533,
+      "secs": 39.5
     },
     "arc_c_prompts": {
       "n": 200,
@@ -153,12 +153,12 @@
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "mcq_acc": 0.845,
-      "secs": 23.4
+      "secs": 23.7
     },
     "gsm8k": {
       "n": 300,
-      "acc": 0.8667,
-      "any_marker_anywhere": 0.0033
+      "acc": 0.8633,
+      "any_marker_anywhere": 0.0
     }
   },
   "sys": {
@@ -178,7 +178,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.2,
       "any_refuse": 0.9,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_harm_zh": {
       "n": 5,
@@ -196,7 +196,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 3.0
+      "secs": 3.1
     },
     "heldout_tool_sql": {
       "n": 20,
@@ -238,7 +238,7 @@
       "n": 20,
       "marker_refuse": 0.0,
       "marker_tool": 0.0,
-      "marker_direct": 0.8,
+      "marker_direct": 0.75,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
       "secs": 3.0
@@ -254,21 +254,21 @@
     },
     "jbb_harmful": {
       "n": 100,
-      "marker_refuse": 0.93,
+      "marker_refuse": 0.92,
       "marker_tool": 0.0,
-      "marker_direct": 0.0,
-      "nat_refuse": 0.03,
-      "any_refuse": 0.96,
-      "secs": 16.7
+      "marker_direct": 0.01,
+      "nat_refuse": 0.05,
+      "any_refuse": 0.97,
+      "secs": 16.8
     },
     "jbb_benign": {
       "n": 100,
-      "marker_refuse": 0.19,
+      "marker_refuse": 0.21,
       "marker_tool": 0.0,
-      "marker_direct": 0.04,
+      "marker_direct": 0.02,
       "nat_refuse": 0.01,
-      "any_refuse": 0.2,
-      "secs": 19.6
+      "any_refuse": 0.22,
+      "secs": 19.9
     }
   },
   "think": {
@@ -279,7 +279,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.96,
-      "secs": 3.7
+      "secs": 3.8
     },
     "heldout_harm_jailbreak_styles": {
       "n": 10,
@@ -288,7 +288,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.8,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_harm_zh": {
       "n": 5,
@@ -297,7 +297,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 1.0,
-      "secs": 0.9
+      "secs": 1.0
     },
     "heldout_benign_lookalike": {
       "n": 20,
@@ -306,7 +306,7 @@
       "marker_direct": 0.05,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_tool_sql": {
       "n": 20,
@@ -324,7 +324,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 0.8
+      "secs": 0.9
     },
     "heldout_tool_search": {
       "n": 20,
@@ -333,7 +333,7 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_tool_neg": {
       "n": 30,
@@ -342,7 +342,7 @@
       "marker_direct": 0.0333,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 5.8
+      "secs": 5.9
     },
     "heldout_sys1_para": {
       "n": 20,
@@ -351,7 +351,7 @@
       "marker_direct": 0.9,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 2.9
+      "secs": 3.0
     },
     "heldout_sys1_hard": {
       "n": 10,
@@ -360,25 +360,25 @@
       "marker_direct": 0.0,
       "nat_refuse": 0.0,
       "any_refuse": 0.0,
-      "secs": 3.0
+      "secs": 2.9
     },
     "jbb_harmful": {
       "n": 100,
       "marker_refuse": 0.92,
       "marker_tool": 0.02,
-      "marker_direct": 0.0,
-      "nat_refuse": 0.02,
+      "marker_direct": 0.01,
+      "nat_refuse": 0.03,
       "any_refuse": 0.94,
-      "secs": 16.5
+      "secs": 16.7
     },
     "jbb_benign": {
       "n": 100,
       "marker_refuse": 0.19,
-      "marker_tool": 0.04,
-      "marker_direct": 0.0,
+      "marker_tool": 0.05,
+      "marker_direct": 0.01,
       "nat_refuse": 0.01,
       "any_refuse": 0.2,
-      "secs": 19.5
+      "secs": 19.6
     }
   }
 }

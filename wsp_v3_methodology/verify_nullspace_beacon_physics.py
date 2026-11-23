@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
-"""
-Standalone Physical Verification of the WSP v3.0 Two-Layer Sensor-Beacon-Actuator Hypothesis:
-  1) Measures unseen paraphrase recall at strictly 0.0% hard-negative false-positive rate across layers
-     (verifying why mid-to-deep semantic layers outperform the terminal token-emission layer).
-  2) Constructs the Nullspace Beacon vector `v_beacon` in the orthogonal complement of natural Layer-(L-1)
-     activations and minimum-sensitivity intermediate Attention K/V subspace, and measures its Signal-to-Noise
-     Ratio (SNR = 11.3x - 18.9x) and non-beacon residual cosine preservation (0.981 - 0.987) at Layer L-1.
-"""
 import argparse
+import json
+from pathlib import Path
 import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -16,11 +10,13 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen3-8B", help="Model path or Hugging Face ID")
+    ap.add_argument("--output_json", default=None, help="Optional JSON output path")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
 
-    tok = AutoTokenizer.from_pretrained(args.model)
-    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16).to(args.device).eval()
+    is_local = Path(args.model).exists()
+    tok = AutoTokenizer.from_pretrained(args.model, local_files_only=is_local)
+    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, local_files_only=is_local).to(args.device).eval()
     L = model.config.num_hidden_layers
     d = model.config.hidden_size
     fsm_layer = L - 1
@@ -51,21 +47,21 @@ def main():
         "Find all real solutions to x^2 - 5x + 6 = 0.",
         "Explain how photosynthesis converts light energy into chemical energy.",
     ]
-    unseen_para = [
-        "What's the capital of Spain?",
-        "17 + 26 = ?",
-        "Is 29 prime?",
-        "chemical symbol for sodium?",
-        "How many days are in a leap year?",
-        "Who wrote Pride and Prejudice?",
-        "What is 9 times 8?",
-        "Boiling point of water in Celsius?",
+    disjoint_para = [
+        "Chemical symbol for potassium? One word.",
+        "Capital city of Portugal? One word.",
+        "What is 25 plus 38? Number only.",
+        "How many semitones are in an octave? Just the number.",
+        "Is 31 a prime number? Yes or no.",
+        "Closest planet to the Sun? One word.",
+        "Positive square root of 169? Number only.",
+        "Freezing point of pure water in Kelvin? Number only.",
     ]
-    unseen_hard_neg = [
-        "If 4x - 7 = 21, what is the value of 3x + 2? Explain step by step.",
-        "A baker bakes 120 loaves a day and sells 85% of them at $5 each. What is the revenue over 4 days?",
+    disjoint_hard_neg = [
+        "If 4x - 7 = 21, what is the value of 3x + 2? Explain your algebraic steps.",
+        "A baker bakes 120 loaves a day and sells 85% of them at $5 each. What is the total revenue over 4 days?",
         "Compare the parliamentary system and the presidential system of government.",
-        "Explain how a relational database index speeds up query performance.",
+        "Explain how a relational database B-tree index speeds up range queries.",
     ]
 
     def fmt(q):
@@ -91,11 +87,12 @@ def main():
                 model(**tok([fmt(q)], return_tensors="pt").to(args.device), use_cache=False, logits_to_keep=1)
         return {l: torch.stack(acts[l], dim=0) for l in cand_layers}
 
-    A_pos, A_neg, A_para, A_hard = collect(calib_pos), collect(calib_neg), collect(unseen_para), collect(unseen_hard_neg)
+    A_pos, A_neg, A_para, A_hard = collect(calib_pos), collect(calib_neg), collect(disjoint_para), collect(disjoint_hard_neg)
     for h in hooks:
         h.remove()
 
     print("=== [1] Across-Layer Semantic Separability (2-Cone Recall @ 0% Hard-Negative FP) ===")
+    layer_recalls = {}
     for l in cand_layers:
         Xp = F.normalize(A_pos[l], dim=-1)
         Xn = F.normalize(A_neg[l], dim=-1)
@@ -107,7 +104,9 @@ def main():
         tau1 = max((Xn @ k1).max().item(), (X_hard @ k1).max().item()) + 0.005
         tau2 = max((Xn @ k2).max().item(), (X_hard @ k2).max().item()) + 0.005
         hit = ((X_para @ k1) > tau1) | ((X_para @ k2) > tau2)
-        print(f"  Layer {l:2d}: Unseen Paraphrase Recall @ 0% FP = {hit.float().mean().item()*100:5.1f}%")
+        rec_val = round(hit.float().mean().item(), 4)
+        layer_recalls[f"layer_{l}"] = rec_val
+        print(f"  Layer {l:2d}: Disjoint Paraphrase Recall @ 0% FP = {rec_val*100:5.1f}%")
 
     print("\n=== [2] Nullspace Beacon Bus SNR & Residual Cosine Preservation ===")
     X_last_all = torch.cat([A_pos[fsm_layer], A_neg[fsm_layer], A_hard[fsm_layer]], dim=0)
@@ -131,7 +130,7 @@ def main():
     l_clean, l_inj = [], []
     hk_c = model.model.layers[fsm_layer].mlp.register_forward_pre_hook(lambda m, inp: l_clean.append(inp[0][0, -1].detach().float().cpu()))
     with torch.no_grad():
-        for q in unseen_para + unseen_hard_neg:
+        for q in disjoint_para + disjoint_hard_neg:
             model(**tok([fmt(q)], return_tensors="pt").to(args.device), use_cache=False, logits_to_keep=1)
     hk_c.remove()
 
@@ -146,21 +145,31 @@ def main():
     hk_s = model.model.layers[l_sens].mlp.register_forward_hook(hk_s_fn)
     hk_i = model.model.layers[fsm_layer].mlp.register_forward_pre_hook(lambda m, inp: l_inj.append(inp[0][0, -1].detach().float().cpu()))
     with torch.no_grad():
-        for idx, q in enumerate(unseen_para + unseen_hard_neg):
-            state["inject"] = idx < len(unseen_para)
+        for idx, q in enumerate(disjoint_para + disjoint_hard_neg):
+            state["inject"] = idx < len(disjoint_para)
             model(**tok([fmt(q)], return_tensors="pt").to(args.device), use_cache=False, logits_to_keep=1)
     hk_s.remove()
     hk_i.remove()
 
     C_clean, C_inj = torch.stack(l_clean), torch.stack(l_inj)
-    n_p = len(unseen_para)
+    n_p = len(disjoint_para)
     proj_trig = C_inj[:n_p] @ w_readout
     proj_untrig = C_inj[n_p:] @ w_readout
-    snr = proj_trig.min().item() / (proj_untrig.abs().max().item() + 1e-6)
+    snr = round(proj_trig.min().item() / (proj_untrig.abs().max().item() + 1e-6), 2)
     v_cpu = F.normalize(v_beacon.float().cpu() * gm_last, dim=0)
     strip_v = lambda X: X - (X @ v_cpu).unsqueeze(1) * v_cpu.unsqueeze(0)
-    cos_p = F.cosine_similarity(strip_v(C_clean[:n_p]), strip_v(C_inj[:n_p]), dim=-1).mean().item()
-    print(f"  Sensor Layer {l_sens} -> Actuator Layer {fsm_layer}: Triggered Min={proj_trig.min().item():+6.2f} | Max Untriggered Noise={proj_untrig.abs().max().item():.3f} | SNR={snr:.1f}x | Residual Cosine Preservation={cos_p:.4f}")
+    cos_p = round(F.cosine_similarity(strip_v(C_clean[:n_p]), strip_v(C_inj[:n_p]), dim=-1).mean().item(), 4)
+    print(f"  Sensor Layer {l_sens} -> Actuator Layer {fsm_layer}: Triggered Min={proj_trig.min().item():+6.2f} | Max Untriggered Noise={proj_untrig.abs().max().item():.3f} | SNR={snr:.2f}x | Residual Cosine Preservation={cos_p:.4f}")
+    if args.output_json:
+        Path(args.output_json).write_text(json.dumps({
+            "sensor_layer": l_sens,
+            "actuator_layer": fsm_layer,
+            "triggered_min_readout": round(proj_trig.min().item(), 3),
+            "untriggered_max_noise": round(proj_untrig.abs().max().item(), 4),
+            "snr_ratio": snr,
+            "residual_cosine_preservation": cos_p,
+            "layer_recalls_at_zero_fp": layer_recalls,
+        }, indent=2))
 
 
 if __name__ == "__main__":
