@@ -34,6 +34,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=5, help="Number of nullspace compilation passes (default: 5)")
     parser.add_argument("--batch_size", type=int, default=8, help="Effective batch size (default: 8)")
     parser.add_argument("--lr", type=str, default="auto", help="Peak step size or 'auto' (1.5e-5 for <=1.5B, 5e-6 for >=7B)")
+    parser.add_argument("--rank_cap", type=int, default=32, help="Target spectral rank cap r for lossless LoRA export (default: 32)")
     parser.add_argument("--disable_nullspace", action="store_true", help="Run unconstrained Standard Full SFT (for baseline comparison)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
@@ -145,7 +146,21 @@ def main():
                             w = lay.get_submodule(mname).weight
                             w0 = w0_gpu[(l, mname)]
                             d = w.data - w0
-                            w.data.copy_(w0 + d - 0.5 * ((d @ U) @ U.T))
+                            w.data.copy_(w0 + d - 0.85 * ((d @ U) @ U.T))
+        if not args.disable_nullspace and args.rank_cap > 0 and (ep >= 1 or ep == args.epochs - 1):
+            with torch.no_grad():
+                for l, lay in enumerate(layers):
+                    for mname, gid in mod_to_group.items():
+                        U_g = U_gpu[(l, gid)]
+                        w = lay.get_submodule(mname).weight
+                        w0 = w0_gpu[(l, mname)]
+                        d = w.data - w0
+                        d = d - (d @ U_g) @ U_g.T
+                        r_eff = min(args.rank_cap, d.shape[0], d.shape[1])
+                        u_s, s_s, vh_s = torch.linalg.svd(d, full_matrices=False)
+                        d_low = (u_s[:, :r_eff] * s_s[:r_eff].unsqueeze(0)) @ vh_s[:r_eff, :]
+                        d_low = d_low - 0.90 * ((d_low @ U_g) @ U_g.T)
+                        w.data.copy_(w0 + d_low)
         print(f"[Step 2] Epoch {ep+1}/{args.epochs} complete ({time.time()-t0:.1f}s)", flush=True)
 
     for p in model.parameters():

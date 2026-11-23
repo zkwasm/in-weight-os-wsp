@@ -1,6 +1,6 @@
 # In-Weight OS: Composable Zero-Gradient Post-Training via Orthogonal Dormant-Channel Superposition
 
-**[English](README.md) | [PDF Paper (`paper.pdf`)](paper.pdf) | [LaTeX Source (`paper.tex`)](paper.tex) | [HF Qwen3-8B-OS](https://huggingface.co/masstensor/Qwen3-8B-InWeight-OS) | [HF Llama-3.1-8B-OS](https://huggingface.co/masstensor/Llama-3.1-8B-Instruct-InWeight-OS) | [HF Dataset](https://huggingface.co/datasets/masstensor/InWeight-OS-MultiSkill-Benchmark)**
+**[English](README.md) | [Architecture Spec (`WSP_V3_SENSOR_BEACON_ACTUATOR_DESIGN.md`)](WSP_V3_SENSOR_BEACON_ACTUATOR_DESIGN.md) | [PDF Paper (`paper.pdf`)](paper.pdf) | [LaTeX Source (`paper.tex`)](paper.tex) | [HF Qwen3-8B-OS](https://huggingface.co/masstensor/Qwen3-8B-InWeight-OS) | [HF Llama-3.1-8B-OS](https://huggingface.co/masstensor/Llama-3.1-8B-Instruct-InWeight-OS) | [HF Dataset](https://huggingface.co/datasets/masstensor/InWeight-OS-MultiSkill-Benchmark)**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Models: Qwen3 & Llama-3.1](https://img.shields.io/badge/Models-Qwen3--8B%20%7C%20Llama--3.1--8B-blue.svg)](#multi-skill-post-training-benchmark-qwen3-8b--llama-31-8b-instruct)
@@ -89,19 +89,17 @@ Why can a naive prompt-end linear gate leak or emit skill fragments in the middl
 
 ### Independent 2,180-Prompt Public Stress Suite (`GSM8K`, `MATH-500`, `Dolly`, `CRUXEval`, `MMLU`, `ARC-C`, `JBB`)
 
-| Evaluation Metric / Public Benchmark | **`Qwen3-8B` Base** | **`Qwen3-8B` OS v1.0** *(Prompt-End Guard Only)* | **`Qwen3-8B` OS v2.1** *(Trajectory-Safe Universal Guard)* | **`Llama-3.1-8B` Base** | **`Llama-3.1-8B` OS v1.0** *(Prompt-End Guard Only)* | **`Llama-3.1-8B` OS v2.1** *(Trajectory-Safe Universal Guard)* |
+| Evaluation Metric / Public Benchmark | **`Qwen3-8B` Base** | **`Qwen3-8B` OS v1.0** *(Prompt-End Guard Only)* | **`Qwen3-8B` OS v3.0** *(Multi-Cone Trajectory-Safe)* | **`Llama-3.1-8B` Base** | **`Llama-3.1-8B` OS v1.0** *(Prompt-End Guard Only)* | **`Llama-3.1-8B` OS v3.0** *(Multi-Cone Trajectory-Safe)* |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`GSM8K` Long-Gen Accuracy** *(N=300, 420 tokens)* | `85.00%` | `32.33%` | **`86.33%` (+1.33% vs Base)** | `86.00%` | `0.00%` | **`85.33%` (Restored)** |
-| **`GSM8K` Trigger Marker Contamination** *(N=300)* | `0.00%` | `94.33%` | **`0.00%` (0 / 300)** | `0.00%` | `100.00%` | **`0.67%` (2 / 300)** |
-| **`MATH-500` Long-Gen Boxed Accuracy** *(N=250, 700 tokens)* | `52.40%` | `2.40%` | **`51.60%` (51.8% non-trig)** | `45.60%` | `~0.00%` | **`44.00%` (45.2% non-trig)** |
-| **`MATH-500` False `Direct_Answer:` / `Refuse`** *(N=500)* | `0.0% / 0.0%` | `77.2% / 0.0%` | **`0.0% / 0.0%` (0 / 500)** | `0.0% / 0.0%` | `70.0% / 23.2%` | **`0.2% / 0.4%`** |
-| **`Dolly` Open Instructions False `Direct_Answer:`** *(N=300)* | `0.00%` | `29.33%` | **`0.00%` (0 / 300)** | `0.00%` | `25.00%+` | **`0.67%` (2 / 300)** |
-| **`CRUXEval` / `MMLU` / `ARC-C` False Markers** *(N=700)* | `0.00%` | `15.00%+` | **`0.00%` (0 / 700)** | `0.00%` | `20.00%+` | **`0.14%` (MMLU/ARC)** |
-| **Non-Skill Pool (`N=1,960`) First-Token `KL > 0.01`** | `0.00%` | `29.00%` | **`0.82%` (`35x` lower)** | `0.00%` | `38.30%` | **`3.11%` (`12x` lower)** |
-| **Non-Skill Pool (`N=1,960`) First-Token `KL > 0.10`** | `0.00%` | `23.80%` | **`0.51%` (`46x` lower)** | `0.00%` | `36.80%` | **`2.40%` (`15x` lower)** |
-| **Non-Skill Pool (`N=1,960`) First-Token `argmax` Changed** | `0.00%` | `23.10%` | **`1.02%` (`0/300` MMLU, `1/300` GSM8K)** | `0.00%` | `37.50%` | **`3.27%` (`0/300` GSM8K, `0/500` MATH)** |
-| **Paraphrased Held-Out Harm / Tool / Benign False-Ref** | — | `96% / 100% / 0%` | **`96.0% / 100.0% / 0.0%`** | — | `95% / 100% / 0%` | **`100.0% / 100.0% / 0.0%`** |
-| **`Qwen3` Default Thinking Mode (`enable_thinking=True`)** | — | `0% Harm / 0% Tool / 54% Math Err` | **`96% Harm / 82% Tool / 0% Math Err`** | — | N/A | N/A |
+| **`GSM8K` Long-Gen Accuracy** *(N=300, 420 tokens)* | `85.00%` | `32.33%` | **`86.67%` (+1.67% vs Base)** | `86.00%` | `0.00%` | **`85.00%` (Restored)** |
+| **`GSM8K` Trigger Marker Contamination** *(N=300)* | `0.00%` | `94.33%` | **`0.33%` (1 / 300)** | `0.00%` | `100.00%` | **`3.00%` (`0/300` 1st-tok chg)** |
+| **`MATH-500` Long-Gen Boxed Accuracy** *(N=250, 700 tokens)* | `52.40%` | `2.40%` | **`52.00%` (52.03% non-trig)** | `45.60%` | `~0.00%` | **`48.09%` (non-trig)** |
+| **`MATH-500` False `Direct_Answer:` / `Refuse`** *(N=500)* | `0.0% / 0.0%` | `77.2% / 0.0%` | **`0.0% / 0.0%` (0 / 500)** | `0.0% / 0.0%` | `70.0% / 23.2%` | **`1.6% / 0.4%` (`0/500` 1st-tok)** |
+| **`CRUXEval (200)` / `MMLU (300)` / `ARC-C (200)` False Markers** | `0.00%` | `15.00%+` | **`0.00%` (0 / 700)** | `0.00%` | `20.00%+` | **`0.00%` on MMLU & ARC-C (`0/500`)** |
+| **`heldout_tool_neg` False Tool Triggers** *(N=30)* | `0.00%` | `10.00%+` | **`0.00%` (`sys`/`think`), `3.3%` (`plain`)** | `0.00%` | `10.00%` | **`0.00%` (`0/30` across `plain`/`sys`/`min`)** |
+| **Paraphrased `heldout_sys1_para` Fast-Route Recall** *(N=20)* | `0.00%` | `85.00%` | **`70% (plain) / 80% (sys) / 90% (think)`** | `0.00%` | `95.00%` | **`65.0%` (`0.0%` on `sys1_hard`)** |
+| **Paraphrased Held-Out Harm / Tool / Benign False-Ref** | — | `96% / 100% / 0%` | **`96% / 98.3–100% / 0.0%`** | — | `95% / 100% / 0%` | **`100% / 95% / 0.0%`** |
+| **`Qwen3` Default Thinking Mode (`enable_thinking=True`)** | — | `0% Harm / 0% Tool / 54% Math Err` | **`96% Harm / 100% Tool (SQL 100, Py 100, Web 100) / 90% Sys1 / 0% Math Err`** | — | N/A | N/A |
 
 ---
 

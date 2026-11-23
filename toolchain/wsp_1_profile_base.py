@@ -29,8 +29,8 @@ def main():
     parser.add_argument("--output_profile", type=str, required=True, help="Output .pt path for nullspace profile")
     parser.add_argument("--wiki_jsonl", type=str, default=str(REPO_DATA_DIR / "wikitext_protect_60.jsonl"))
     parser.add_argument("--arc_jsonl", type=str, default=str(REPO_DATA_DIR / "arc_easy_protect_300.jsonl"))
-    parser.add_argument("--mu_null", type=float, default=3.0, help="Ridge nullspace penalty weight mu (default: 3.0)")
-    parser.add_argument("--hard_energy", type=float, default=0.80, help="Top spectral energy fraction for U_gen (default: 0.80)")
+    parser.add_argument("--mu_null", type=float, default=6.0, help="Ridge nullspace penalty weight mu (default: 6.0)")
+    parser.add_argument("--hard_energy", type=float, default=0.86, help="Top spectral energy fraction for U_gen (default: 0.86)")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     args = parser.parse_args()
 
@@ -58,7 +58,7 @@ def main():
                 def f(_, inp):
                     x = inp[0][0].detach().float()
                     if state["last_only"]:
-                        x = x[-1:]
+                        x = x[-16:]
                     c = state["weight"] * (x.T @ x)
                     cov_gpu[key] = cov_gpu[key] + c if key in cov_gpu else c
                 return f
